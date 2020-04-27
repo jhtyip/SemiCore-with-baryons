@@ -49,9 +49,9 @@ function printToFile_NFW_EffPotentialProfile(fileName, Mshells_radii, potentialP
 
     return nothing
 end
+
+
 ####################################################################################################
-
-
 # Return mass array of NFW profile
 # shells_radii = [inner radius, outer radius, shell radius] in the ith row
 # shells_mass = [total shell mass]. Assume all mass in a shell concentrate at the position just inside the shell radius
@@ -520,28 +520,6 @@ function printToFile_GPE(Tshells_radii, Tshells_GPE, fileName)
 end
 
 
-function printToFile_BhiRes(Bshells_radii_hiRes, Bshells_rho_hiRes, fileName)
-    f = open(fileName, "w")
-
-    for i in 1:size(Bshells_radii_hiRes, 1)
-        println(f, Bshells_radii_hiRes[i], "\t", Bshells_rho_hiRes[i])
-    end
-
-    return nothing
-end
-
-
-function printToFile_orbitalV(Tshells_radii, Tshells_enclosedMass, G, fileName)
-    f = open(fileName, "w")
-
-    for i in 1:size(Tshells_radii, 1)
-        println(f, Tshells_radii[i, 1], "\t", Tshells_radii[i, 2], "\t", Tshells_radii[i, 3], "\t", (G * Tshells_enclosedMass[i] / Tshells_radii[i, 3]) ^ 0.5)
-    end
-
-    return nothing
-end
-
-
 ######################################### For withBar() ############################################
 function barConditions(barRho_0, T, k, m, G, aIndex, firstShellThickness)
     C = (4 * pi * G * m * barRho_0 ^ (aIndex - 1)) / (aIndex * k * T )
@@ -560,7 +538,7 @@ function bar_rho_d2(bar_rho_d1, bar_rho_d0, r, B_params, TDMshells_radii, TDMshe
         c = TDMshells_rho[end] - m * TDMshells_radii[end, 3]
         TDM_rho = m * r + c
     else
-        j = -1
+        j = -1  # Just for declaring
         for i in 1:size(TDMshells_radii, 1)
             if r < TDMshells_radii[i, 3]  # r begins from firstShellThickness / 2 so j =/= 1
                 j = i
@@ -584,7 +562,8 @@ function barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclo
     TDMshells_rho = zeros(size(TDMshells_radii, 1))
     TDMshells_rho[1] = TDMshells_enclosedMass[1] / (4 / 3 * pi * TDMshells_radii[1, 2] ^ 3)
     for i in 2:size(TDMshells_rho, 1)
-        TDMshells_rho[i] = (TDMshells_enclosedMass[i] - TDMshells_enclosedMass[i - 1]) / (4 / 3 * pi * (TDMshells_radii[i, 2] ^ 3 - TDMshells_radii[i, 1] ^ 3))
+        TDMshells_rho[i] = (TDMshells_enclosedMass[i] - TDMshells_enclosedMass[i - 1]) / (4 / 3 * pi * (TDMshells_radii[i, 2] ^ 3 - TDMshells_radii[i, 1] ^ 3))  # Shell rho
+        # TDMshells_rho[i] = TDMshells_enclosedMass[i] / (4 / 3 * pi * TDMshells_radii[i, 2] ^ 3)  # Average rho
     end
 
     h = firstShellThickness
@@ -673,9 +652,9 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
     if totalBarMass_now > totalBarMass  # Need to decrease the guess
         guess_for_higher_or_lower = -1
         if totalBarMass_rhoUp < totalBarMass_now  # If twice-ing does the work
-            twice_or_half_rho = 1 
+            twice_or_half_rho = 1  # Twice-ing
         else
-            twice_or_half_rho = -1
+            twice_or_half_rho = -1  # Halv-ing
         end
     else  # Need to increase the guess
         guess_for_higher_or_lower = 1
@@ -692,7 +671,7 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
     totalBarMass_rhoGuess = sum(Bshells_mass_rhoGuess)
     if guess_for_higher_or_lower == 1  # Guess until the guess is higher than the conserved mass
         while totalBarMass_rhoGuess < totalBarMass
-            rhoGuess *= 2 ^ twice_or_half_rho
+            rhoGuess *= 2 ^ twice_or_half_rho  # Update guess in the according direction
             B_BC, B_params = barConditions(rhoGuess, T, k, m, G, aIndex, firstShellThickness)
             foo, Bshells_mass_rhoGuess, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
             totalBarMass_rhoGuess = sum(Bshells_mass_rhoGuess)
@@ -750,6 +729,17 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
 end
 
 
+function printToFile_BhiRes(Bshells_radii_hiRes, Bshells_rho_hiRes, fileName)
+    f = open(fileName, "w")
+
+    for i in 1:size(Bshells_radii_hiRes, 1)
+        println(f, Bshells_radii_hiRes[i], "\t", Bshells_rho_hiRes[i])
+    end
+
+    return nothing
+end
+
+
 ######################################### Not used yet #############################################
 function shellTrimmer(shells_radii, shells_mass)
     numOfZeros = 0
@@ -776,4 +766,15 @@ function escapedRemoval(Tshells_enclosedMass, Tshells_GPE_updated, shells_radii,
 
     shells_radii, shells_mass = shellTrimmer(shells_radii, shells_mass)
     return shells_mass
+end
+
+
+function printToFile_orbitalV(Tshells_radii, Tshells_enclosedMass, G, fileName)
+    f = open(fileName, "w")
+
+    for i in 1:size(Tshells_radii, 1)
+        println(f, Tshells_radii[i, 1], "\t", Tshells_radii[i, 2], "\t", Tshells_radii[i, 3], "\t", (G * Tshells_enclosedMass[i] / Tshells_radii[i, 2]) ^ 0.5)
+    end
+
+    return nothing
 end

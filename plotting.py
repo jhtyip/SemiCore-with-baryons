@@ -775,16 +775,45 @@ import numpy as np
 # plt.show()
 
 
-array = np.loadtxt("dmOnly_check_adiaCon/30_6.93_576_40/M_t=0.txt")
-plt.plot(array[:, 1], array[:, 6], label="NFW")
+# array = np.loadtxt("dmOnly_check_adiaCon/30_6.93_576_40/M_t=0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="NFW")
 
-for i in np.arange(6):
-    array = np.loadtxt("dmOnly_check_adiaCon/30_6.93_576_40/T_t=0.35.adiaCon="+str(i)+".txt")
-    plt.plot(array[:, 1], array[:, 6], label=i)
+# for i in np.arange(6):
+#     array = np.loadtxt("dmOnly_check_adiaCon/30_6.93_576_40/T_t=0.35.adiaCon="+str(i)+".txt")
+#     plt.plot(array[:, 1], array[:, 6], label=i)
 
 
-plt.ylabel("average density of total DM (Mo / kpc^3)")
-plt.title("convergence test on adiabatic expansion\nresults at t = 14 Gyr")
+# plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.title("convergence test on adiabatic expansion\nresults at t = 14 Gyr")
+# plt.xlabel("radius (kpc)")
+# # plt.xlim(0.01, 10)
+# # plt.ylim(1e6, 1e10)
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+aIndices = ["1.2", "1.5", "1.67", "1.6666666666666667"]
+aIndices = ["1.67"]
+for i in aIndices:
+
+    indexNum = [0, 0.7, 2.1, 2.8, 4.9, 7.0, 9.1, 11.2, 13.3, 14.0]
+
+    # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/BhiRes_t=0.txt")
+    # # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/B_t=0.txt")
+    # # plt.plot(array[:, 1], array[:, 6], label=i + ", init", linestyle="dashed")
+    # plt.plot(array[:, 0], array[:, 1], label=i + ", init", linestyle="dashed")
+
+    for j in indexNum:
+
+        array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/BhiRes_t="+str(j)+".txt")
+        # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/B_result.txt")
+        # plt.plot(array[:, 1], array[:, 6], label=i)
+        plt.plot(array[:, 0], array[:, 1], label="t = "+str(j))
+
+plt.ylabel("density of baryon (Mo / kpc^3)")
+plt.title("results at different times\nv_k = 30 km / s, tau = 6.93 Gyr")
 plt.xlabel("radius (kpc)")
 # plt.xlim(0.01, 10)
 # plt.ylim(1e6, 1e10)

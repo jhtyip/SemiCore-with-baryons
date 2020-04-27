@@ -22,7 +22,7 @@ const rho_c = 3 * H ^ 2 / (8 * pi * G)  # Critical density of the universe
 m_molar = 0.75 * 1.00784 + 0.25 * 4.002602;  # g mol-1
 m = m_molar / 1000 / 6.02214076e23 / Mo  # Mass per particle (75% hydrogen atom + 25% helium atom); kg to Mo
 
-aIndex = 5 / 3  # Adiabatic index
+aIndex = 5 / 3  # Adiabatic index: 5 / 3
 
 # Parameters of Kim/XiaoXiong's halo
 c = 23.6  # Concentration parameter
@@ -34,7 +34,7 @@ v_k = v_k_in_kms * 1000 / kpc # Recoil velocity of daughter particles; km s-1 to
 tau = 6.93  # Half-life of mother particles; Gyr
 
 t_end = 14  # Age of the universe
-numOfSteps = 40  # 40+ is good enough
+numOfSteps = 20  # 40+ is good enough
 
 firstShellThickness = 1e-5  # Use 1e-n to see from 1e-(n-3) (conservative)
 shellThicknessFactor = 1.02  # Thickness of shell grows exponentially according to this factor
@@ -51,7 +51,7 @@ R_s = R_vir / c
 rho_0 = M_vir / (4 * pi * R_s ^ 3) / (log(1 + c) - c / (1 + c))
 NFW_params = [rho_0, R_s, c]
 
-initNumOf_M_Shells = floor(Int, log(1 - NFW_params[2] * NFW_params[3] / firstShellThickness * (1 - shellThicknessFactor)) / log(shellThicknessFactor)) + 1   # Determines initial shellThickness (or not)
+initNumOf_M_Shells = floor(Int, log(1 - NFW_params[2] * NFW_params[3] / firstShellThickness * (1 - shellThicknessFactor)) / log(shellThicknessFactor)) + 1   # Determines initial shellThickness
 println("initNumOf_M_Shells: ", initNumOf_M_Shells, "\n")
 
 dt = t_end / numOfSteps
@@ -62,7 +62,7 @@ function dmOnly()
     functionStart = time_ns()
     stepStart = time_ns()
 
-    folderName = "dmOnly_check_adiaCon"
+    folderName = "dmOnly"
     if !isdir(folderName)
         mkdir(folderName)
     end
@@ -137,7 +137,7 @@ function dmOnly()
     println(g, t, "\t", timeTaken, "\t", totalDMmass, "\t", 0)
 
     # Rolling starts
-    for t in dt:dt#:t_end
+    for t in dt:dt:t_end
         stepStart = time_ns()
 
         println("Working on t=$t Gyr...")
@@ -186,7 +186,7 @@ function dmOnly()
         Mshells_radii, Mshells_mass = adiabaticExpansion(Mshells_radii, Mshells_mass, Tshells_enclosedMass, Tshells_enclosedMass_updated)
         Dshells_radii, Dshells_mass = adiabaticExpansion(Dshells_radii, Dshells_mass, Tshells_enclosedMass, Tshells_enclosedMass_updated)
         
-        # Test for adiabatic convergence
+        # Test for adiabatic convergence (bad)
         # adiaCon_numOfLoops = 10
         # if adiaCon_numOfLoops != 0
         #     Tshells_radii, Tshells_mass = totalShells(Mshells_radii, Dshells_radii, Mshells_mass, Dshells_mass)
@@ -354,8 +354,6 @@ function withBar()
     printToFile(Tshells_radii, Tshells_mass, TfileName)
     GPEfileName = folderName * "/GPE_t=$t.txt"
     printToFile_GPE(Tshells_radii, Tshells_GPE, GPEfileName)
-    orbitalVfileName = folderName * "/orbitalV_t=$t.txt"
-    printToFile_orbitalV(Tshells_radii, Tshells_enclosedMass, G, orbitalVfileName)
 
     stepResultsFileName = folderName * "/stepResults.txt"
     g = open(stepResultsFileName, "w")
@@ -435,6 +433,9 @@ function withBar()
         Tshells_enclosedMass_updated = enclosedMass(Tshells_radii_updated, Tshells_mass_updated)
 
         ########################### Iteration goes here
+        # DM adiabatic
+        # Solve bar
+        # Loop...
         ########################### Iteration ends
 
         # No harm to make sure
@@ -457,8 +458,6 @@ function withBar()
         printToFile(Tshells_radii, Tshells_mass, TfileName)
         GPEfileName = folderName * "/GPE_t=$t.txt"
         printToFile_GPE(Tshells_radii, Tshells_GPE, GPEfileName)
-        orbitalVfileName = folderName * "/orbitalV_t=$t.txt"
-        printToFile_orbitalV(Tshells_radii, Tshells_enclosedMass, G, orbitalVfileName)
 
         totalDMmass = sum(TDMshells_mass)
         println("Total DM mass: ", totalDMmass, " Mo")
@@ -483,8 +482,6 @@ function withBar()
         printToFile(Tshells_radii, Tshells_mass, TfileName)
         GPEfileName = folderName * "/GPE_result.txt"
         printToFile_GPE(Tshells_radii, Tshells_GPE, GPEfileName)
-        orbitalVfileName = folderName * "/orbitalV_result.txt"
-        printToFile_orbitalV(Tshells_radii, Tshells_enclosedMass, G, orbitalVfileName)
 
         totalTimeTaken = (time_ns() - functionStart) / 1e9
         println(f, "timeTaken_total=", totalTimeTaken)
@@ -493,6 +490,6 @@ function withBar()
     return nothing
 end
 
-dmOnly()
+# dmOnly()
 # verify_NFW()
-# withBar()
+withBar()
