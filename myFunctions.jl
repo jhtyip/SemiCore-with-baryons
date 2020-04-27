@@ -1,7 +1,3 @@
-# using Roots
-# using IntervalRootFinding
-# using IntervalArithmetic
-# using Plots
 # using Printf
 using QuadGK
 
@@ -17,11 +13,11 @@ NFW_density(NFW_params, r) = NFW_params[1] / (r / NFW_params[2]) / (1 + r / NFW_
 
 function NFW_shellMass(NFW_params, shellRange)
     integrand(r) = 4 * pi * r ^ 2 * NFW_density(NFW_params, r)
-
+    
     return quadgk(integrand, shellRange[1], shellRange[2])[1]
 end    
 
-
+ 
 ######################################## For verify_NFW() ##########################################
 function NFW_GPE(NFWshells_radii, NFW_params, G)
     NFWshells_GPE = zeros(size(NFWshells_radii, 1))
@@ -193,9 +189,12 @@ function ellipseSolver(r_0, L, totalE_afterDecay, shells_radii, Tshells_radii, T
     firstShellThickness = shells_radii[1, 2]  # To be used as a tolerance
 
     # Some initial checking
-    if energyEquation(r_0, L, totalE_afterDecay, Tshells_radii, Tshells_GPE, Tshells_enclosedMass) >= 0  # This should not happen unless GPE/totalE are not updated properly (= 0 occurs when v_k = 0)
-        println("ellipseSolver: error")
-        return zeros(NaN)  # Should impose an error
+    if energyEquation(r_0, L, totalE_afterDecay, Tshells_radii, Tshells_GPE, Tshells_enclosedMass) >= 0
+        # This should not happen unless GPE/totalE are not updated properly (= 0 occurs when v_k = 0)
+        println("ellipseSolver: v_k probably too small; no solvable roots")
+        # println(energyEquation(r_0, L, totalE_afterDecay, Tshells_radii, Tshells_GPE, Tshells_enclosedMass))
+        # zeros(NaN)  # Halt program
+        return r_0, r_0  # If this happens, radii just stay put (i.e. solution for v_k = 0)
     elseif totalE_afterDecay >= 0  # Escaped
         return -1, -1
     else  # If checking passed
@@ -275,19 +274,6 @@ function newShellsRadii(shells_radii, shells_ellipseRadii)
         # totalLen += newNumOfShells * firstShellThickness
         totalLen += firstShellThickness * shellThicknessFactor ^ (newNumOfShells - 1)
     end
-
-    # if newNumOfShells > size(shells_radii, 1)
-    #     newShells_radii = zeros(newNumOfShells, 3)
-    #     for i in 1:size(newShells_radii, 1)
-    #         newShells_radii[i, 1] = firstShellThickness * (1 - shellThicknessFactor ^ (i - 1)) / (1 - shellThicknessFactor)
-    #         newShells_radii[i, 2] = newShells_radii[i, 1] + firstShellThickness * shellThicknessFactor ^ (i - 1)
-    #         newShells_radii[i, 3] = (newShells_radii[i, 1] + newShells_radii[i, 2]) / 2
-    #     end
-
-    #     return newShells_radii
-    # else
-    #     return shells_radii
-    # end
 
     newShells_radii = zeros(newNumOfShells, 3)
     for i in 1:size(newShells_radii, 1)
@@ -371,19 +357,18 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
     # Tshells_radii_updated is extended 
     
     expansionRatios = Tshells_enclosedMass[1:size(shells_radii, 1)] ./ Tshells_enclosedMass_updated[1:size(shells_radii, 1)]
-    for i in 1:size(expansionRatios, 1)
-        if expansionRatios[i] < 1
-            println("adiabaticExpansion: expansion ratio smaller than 1, i.e. NOT expanding")
-            zeros(NaN)  # To cause error, halting the program
-            break
-        end
+    contractionCount = count(i -> (i < 1), expansionRatios)
+    if contractionCount > 0
+        println("adiabaticExpansion: expansion ratio smaller than 1, i.e. NOT expanding. Count: ", contractionCount, ", min ratio: ", findmin(expansionRatios)[1])
+        # zeros(NaN)  # To cause error, halting the program
     end
 
-    shells_expandedRadii = shells_radii[:, 3] .* expansionRatios
+    # shells_expandedRadii = shells_radii[:, 3] .* expansionRatios
+    shells_expandedRadii = shells_radii[:, 2] .* expansionRatios  # Use 2 or 3?
 
     expandedShells_radii = newShellsRadii(shells_radii, shells_expandedRadii)
     expandedShells_mass = zeros(size(expandedShells_radii, 1))
-    for i in 1:size(expandedShells_mass, 1)  # This interpolation thing should work if the relation is monotonic. Check total mass after expansion.
+    for i in 1:size(expandedShells_radii, 1)  # This interpolation thing should work if the relation is monotonic. Check total mass after expansion.
         e1 = expandedShells_radii[i, 1]  # Inner radius of expanded shells
         e2 = expandedShells_radii[i, 2]  # Outer radius of expanded shells
         
@@ -402,27 +387,54 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
             end
         end
 
+        # if e1_smallerThanID == 1
+        #     m = (shells_radii[e1_smallerThanID, 3] - 0) / (shells_expandedRadii[e1_smallerThanID] - 0)
+        #     c = 0
+        #     r1 = m * e1 + c
+        # elseif e1_smallerThanID != -1
+        #     m = (shells_radii[e1_smallerThanID, 3] - shells_radii[e1_smallerThanID - 1, 3]) / (shells_expandedRadii[e1_smallerThanID] - shells_expandedRadii[e1_smallerThanID - 1])
+        #     c = shells_radii[e1_smallerThanID, 3] - m * shells_expandedRadii[e1_smallerThanID]
+        #     r1 = m * e1 + c
+        # else
+        #     r1 = -1  # Should never happen
+        # end
+
+        # if e2_smallerThanID == 1
+        #     m = (shells_radii[e2_smallerThanID, 3] - 0) / (shells_expandedRadii[e2_smallerThanID] - 0)
+        #     c = 0
+        #     r2 = m * e2 + c
+        # elseif e2_smallerThanID != -1
+        #     m = (shells_radii[e2_smallerThanID, 3] - shells_radii[e2_smallerThanID - 1, 3]) / (shells_expandedRadii[e2_smallerThanID] - shells_expandedRadii[e2_smallerThanID - 1])
+        #     c = shells_radii[e2_smallerThanID, 3] - m * shells_expandedRadii[e2_smallerThanID]
+        #     r2 = m * e2 + c
+        # else
+        #     r2 = -1  # Will happen once
+        #     println("adiabaticExpansion: r2 = -1")
+        # end
+
         if e1_smallerThanID == 1
-            m = (shells_radii[e1_smallerThanID, 3] - 0) / (shells_expandedRadii[e1_smallerThanID] - 0)
+            m = (shells_radii[e1_smallerThanID, 2] - 0) / (shells_expandedRadii[e1_smallerThanID] - 0)
             c = 0
             r1 = m * e1 + c
         elseif e1_smallerThanID != -1
-            m = (shells_radii[e1_smallerThanID, 3] - shells_radii[e1_smallerThanID - 1, 3]) / (shells_expandedRadii[e1_smallerThanID] - shells_expandedRadii[e1_smallerThanID - 1])
-            c = shells_radii[e1_smallerThanID, 3] - m * shells_expandedRadii[e1_smallerThanID]
+            m = (shells_radii[e1_smallerThanID, 2] - shells_radii[e1_smallerThanID - 1, 2]) / (shells_expandedRadii[e1_smallerThanID] - shells_expandedRadii[e1_smallerThanID - 1])
+            c = shells_radii[e1_smallerThanID, 2] - m * shells_expandedRadii[e1_smallerThanID]
             r1 = m * e1 + c
         else
             r1 = -1  # Should never happen
         end
+
         if e2_smallerThanID == 1
-            m = (shells_radii[e2_smallerThanID, 3] - 0) / (shells_expandedRadii[e2_smallerThanID] - 0)
+            m = (shells_radii[e2_smallerThanID, 2] - 0) / (shells_expandedRadii[e2_smallerThanID] - 0)
             c = 0
             r2 = m * e2 + c
         elseif e2_smallerThanID != -1
-            m = (shells_radii[e2_smallerThanID, 3] - shells_radii[e2_smallerThanID - 1, 3]) / (shells_expandedRadii[e2_smallerThanID] - shells_expandedRadii[e2_smallerThanID - 1])
-            c = shells_radii[e2_smallerThanID, 3] - m * shells_expandedRadii[e2_smallerThanID]
+            m = (shells_radii[e2_smallerThanID, 2] - shells_radii[e2_smallerThanID - 1, 2]) / (shells_expandedRadii[e2_smallerThanID] - shells_expandedRadii[e2_smallerThanID - 1])
+            c = shells_radii[e2_smallerThanID, 2] - m * shells_expandedRadii[e2_smallerThanID]
             r2 = m * e2 + c
         else
             r2 = -1  # Will happen once
+            # println("adiabaticExpansion: r2 = -1")
         end
 
         firstShellThickness = shells_radii[1, 2]
@@ -450,7 +462,7 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
         
         expandedShells_mass[i] += shells_mass[r1_smallerThanID] * (1 - (r1 ^ 3 - shells_radii[r1_smallerThanID, 1] ^ 3) / (shells_radii[r1_smallerThanID, 2] ^ 3 - shells_radii[r1_smallerThanID, 1] ^ 3))
         if r2_smallerThanID == -1
-            expandedShells_mass[i] += shells_mass[end]  # This is why the density is always smaller
+            expandedShells_mass[i] += shells_mass[end]  # This is why the density is always weird at the end
             r2_smallerThanID = size(shells_radii, 1)
         else
             expandedShells_mass[i] += shells_mass[r2_smallerThanID] * (1 - (shells_radii[r2_smallerThanID, 2] ^ 3 - r2 ^ 3) / (shells_radii[r2_smallerThanID, 2] ^ 3 - shells_radii[r2_smallerThanID, 1] ^ 3))

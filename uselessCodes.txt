@@ -1,0 +1,157 @@
+# function adiabaticExpansion(Mshells_radii, Mshells_mass, Dshells_radii, Dshells_mass, Tshells_enclosedMass, Tshells_enclosedMass_updated) 
+#     # At this moment:
+#     # Mshells_radii is short as original
+#     # Dshells_radii is extended
+#     # Tshells_radii is short as original
+#     # Tshells_radii_updated is extended 
+    
+#     # Daughter's expansion
+#     D_expansion = "n"  # Turn on/off
+#     if D_expansion == "y"
+#         expansionRatios = Tshells_enclosedMass[1:size(Dshells_radii, 1)] ./ Tshells_enclosedMass_updated[1:size(Dshells_radii, 1)]
+#         for i in 1:size(expansionRatios, 1)
+#             if expansionRatios[i] < 1
+#                 println("adiabaticExpansion: expansion ratio smaller than 1, i.e. NOT expanding")
+#                 zeros(NaN)  # To cause error, halting the program
+#                 break
+#             end
+#         end
+
+#         Dshells_expandedRadii = Dshells_radii[:, 3] .* expansionRatios
+        
+#         # Dshells_enclosedMass = enclosedMass(Dshells_radii, Dshells_mass)
+#         # expandedDshells_radii = newShellsRadii(Dshells_radii, Dshells_expandedRadii)
+#         # expandedDshells_enclosedMass = zeros(size(expandedDshells_radii, 1))
+#         # for i in 1:size(Dshells_expandedRadii, 1)
+#         #     expandedR_smallerThanID = -1
+#         #     for j in 1:size(expandedDshells_radii, 1)
+#         #         if Dshells_expandedRadii[i] <= expandedDshells_radii[j, 2]
+#         #             expandedR_smallerThanID = j
+#         #             break
+#         #         end
+#         #     end
+
+#         #     expandedDshells_enclosedMass[expandedR_smallerThanID] = Dshells_enclosedMass[i]
+#         # end
+
+#         # expandedDshells_mass = zeros(size(expandedDshells_radii, 1))
+#         # numOfZeroShellsBefore = 0
+#         # for i in 1:size(expandedDshells_enclosedMass, 1)
+#         #     if expandedDshells_enclosedMass[i] == 0
+#         #         numOfZeroShellsBefore += 1
+#         #     else
+#         #         if i - numOfZeroShellsBefore - 1 != 0
+#         #             averagedRho = (expandedDshells_enclosedMass[i] - expandedDshells_enclosedMass[i - numOfZeroShellsBefore - 1]) / (4 / 3 * pi * (expandedDshells_radii[i, 2] ^ 3 - expandedDshells_radii[i - numOfZeroShellsBefore - 1, 2] ^ 3))
+#         #             for j in i - numOfZeroShellsBefore : i
+#         #                 expandedDshells_mass[j] = averagedRho * 4 / 3 * pi * (expandedDshells_radii[j, 2] ^ 3 - expandedDshells_radii[j, 1] ^ 3)
+#         #             end
+#         #         else
+#         #             averagedRho = expandedDshells_enclosedMass[i] / (4 / 3 * pi * expandedDshells_radii[i, 2] ^ 3 )
+#         #             for j in i - numOfZeroShellsBefore : i
+#         #                 expandedDshells_mass[j] = averagedRho * 4 / 3 * pi * (expandedDshells_radii[j, 2] ^ 3 - expandedDshells_radii[j, 1] ^ 3)
+#         #             end
+#         #         end
+#         #         numOfZeroShellsBefore = 0
+#         #     end
+#         # end
+#     elseif D_expansion == "n"
+#         expandedDshells_radii = Dshells_radii
+#         expandedDshells_mass = Dshells_mass
+#     end
+    
+#     # Mother's expansion (always on)
+#     expansionRatios = Tshells_enclosedMass[1:size(Mshells_radii, 1)] ./ Tshells_enclosedMass_updated[1:size(Mshells_radii, 1)]
+#     for i in 1:size(expansionRatios, 1)
+#         if expansionRatios[i] < 1
+#             println("adiabaticExpansion: expansion ratio smaller than 1, i.e. NOT expanding")
+#             zeros(NaN)  # To cause error, halting the program
+#             break
+#         end
+#     end
+
+#     Mshells_expandedRadii = Mshells_radii[:, 3] .* expansionRatios
+
+#     expandedMshells_radii = newShellsRadii(Mshells_radii, Mshells_expandedRadii)
+#     expandedMshells_mass = zeros(size(expandedMshells_radii, 1))
+#     for i in 1:size(expandedMshells_mass, 1)  # This interpolation thing should work if the relation is monotonic. Check total mass after expansion.
+#         e1 = expandedMshells_radii[i, 1]  # Inner radius of expanded shells
+#         e2 = expandedMshells_radii[i, 2]  # Outer radius of expanded shells
+        
+#         e1_smallerThanID = -1
+#         for j in 1:size(Mshells_expandedRadii, 1)
+#             if e1 < Mshells_expandedRadii[j]
+#                 e1_smallerThanID = j
+#                 break
+#             end
+#         end
+#         e2_smallerThanID = -1
+#         for j in 1:size(Mshells_expandedRadii, 1)
+#             if e2 < Mshells_expandedRadii[j]
+#                 e2_smallerThanID = j
+#                 break
+#             end
+#         end
+
+#         if e1_smallerThanID == 1
+#             m = (Mshells_radii[e1_smallerThanID, 3] - 0) / (Mshells_expandedRadii[e1_smallerThanID] - 0)
+#             c = 0
+#             r1 = m * e1 + c
+#         elseif e1_smallerThanID != -1
+#             m = (Mshells_radii[e1_smallerThanID, 3] - Mshells_radii[e1_smallerThanID - 1, 3]) / (Mshells_expandedRadii[e1_smallerThanID] - Mshells_expandedRadii[e1_smallerThanID - 1])
+#             c = Mshells_radii[e1_smallerThanID, 3] - m * Mshells_expandedRadii[e1_smallerThanID]
+#             r1 = m * e1 + c
+#         else
+#             r1 = -1  # Should never happen
+#         end
+#         if e2_smallerThanID == 1
+#             m = (Mshells_radii[e2_smallerThanID, 3] - 0) / (Mshells_expandedRadii[e2_smallerThanID] - 0)
+#             c = 0
+#             r2 = m * e2 + c
+#         elseif e2_smallerThanID != -1
+#             m = (Mshells_radii[e2_smallerThanID, 3] - Mshells_radii[e2_smallerThanID - 1, 3]) / (Mshells_expandedRadii[e2_smallerThanID] - Mshells_expandedRadii[e2_smallerThanID - 1])
+#             c = Mshells_radii[e2_smallerThanID, 3] - m * Mshells_expandedRadii[e2_smallerThanID]
+#             r2 = m * e2 + c
+#         else
+#             r2 = -1  # Will happen once
+#         end
+
+#         firstShellThickness = Mshells_radii[1, 2]
+#         shellThicknessFactor = (Mshells_radii[2, 2] - Mshells_radii[2, 1]) / firstShellThickness
+#         if r1 != -1
+#             totalLen = 0
+#             r1_smallerThanID = 0
+#             while totalLen <= r1
+#                 r1_smallerThanID += 1
+#                 totalLen += firstShellThickness * shellThicknessFactor ^ (r1_smallerThanID - 1)
+#             end
+#         else
+#             println("adiabaticExpansion error: r1 = -1")  # Prompt error
+#         end
+#         if r2 != -1
+#             totalLen = 0
+#             r2_smallerThanID = 0
+#             while totalLen <= r2
+#                 r2_smallerThanID += 1
+#                 totalLen += firstShellThickness * shellThicknessFactor ^ (r2_smallerThanID - 1)
+#             end
+#         else
+#             r2_smallerThanID = -1  # Special treatment
+#         end
+        
+#         expandedMshells_mass[i] += Mshells_mass[r1_smallerThanID] * (1 - (r1 ^ 3 - Mshells_radii[r1_smallerThanID, 1] ^ 3) / (Mshells_radii[r1_smallerThanID, 2] ^ 3 - Mshells_radii[r1_smallerThanID, 1] ^ 3))
+#         if r2_smallerThanID == -1
+#             expandedMshells_mass[i] += Mshells_mass[end]  # This is why the density is always smaller
+#             r2_smallerThanID = size(Mshells_radii, 1)
+#         else
+#             expandedMshells_mass[i] += Mshells_mass[r2_smallerThanID] * (1 - (Mshells_radii[r2_smallerThanID, 2] ^ 3 - r2 ^ 3) / (Mshells_radii[r2_smallerThanID, 2] ^ 3 - Mshells_radii[r2_smallerThanID, 1] ^ 3))
+#         end
+
+#         if r1_smallerThanID == r2_smallerThanID
+#             expandedMshells_mass[i] -= Mshells_mass[r1_smallerThanID]
+#         elseif r2_smallerThanID - r1_smallerThanID > 1
+#             expandedMshells_mass[i] += sum(Mshells_mass[r1_smallerThanID + 1:r2_smallerThanID - 1])
+#         end
+#     end
+
+#     return expandedMshells_radii, expandedMshells_mass, expandedDshells_radii, expandedDshells_mass
+# end

@@ -8,8 +8,8 @@
 include("myFunctions.jl")
 
 ######################################## Tunable parameters ########################################
-tol = 0.1 / 100  # Tolerance for bisection method. In unit of shellThickness
-tol_barGuess = 0.1 / 100
+tol = 0.01 / 100  # Tolerance for bisection method. In unit of shellThickness
+tol_barGuess = 0.01 / 100
 
 const Mo = 1.98847e30  # kg
 const kpc = 3.08567758128e19  # m
@@ -29,14 +29,14 @@ c = 23.6  # Concentration parameter
 M_vir = 0.505e10  # Mo
 rho_avg = 103.4 * rho_c
 
-v_k_in_kms = 50
+v_k_in_kms = 30
 v_k = v_k_in_kms * 1000 / kpc # Recoil velocity of daughter particles; km s-1 to kpc s-1
-tau = 3  # Half-life of mother particles; Gyr
+tau = 6.93  # Half-life of mother particles; Gyr
 
 t_end = 14  # Age of the universe
-numOfSteps = 20
+numOfSteps = 40  # 40+ is good enough
 
-firstShellThickness = 0.0001
+firstShellThickness = 1e-5  # Use 1e-n to see from 1e-(n-3) (conservative)
 shellThicknessFactor = 1.02  # Thickness of shell grows exponentially according to this factor
 
 initBarRho_0 = 1e9  # Initial baryon core density; Mo kpc-3; typical: 1e9
@@ -62,7 +62,7 @@ function dmOnly()
     functionStart = time_ns()
     stepStart = time_ns()
 
-    folderName = "dmOnly"
+    folderName = "dmOnly_compare_MDadia_DadiaOn"
     if !isdir(folderName)
         mkdir(folderName)
     end
@@ -148,13 +148,13 @@ function dmOnly()
         Mshells_totalE_afterDecay = totalE_afterDecay(Mshells_radii, Tshells_GPE, Mshells_L, v_k)
 
         # Solve equation to get ellipse
-        Mshells_ellipseRadii = ellipseRadii(Mshells_L, Mshells_totalE_afterDecay, Mshells_radii, Tshells_radii, Tshells_enclosedMass, Tshells_GPE, G, tol)        
+        Mshells_ellipseRadii = ellipseRadii(Mshells_L, Mshells_totalE_afterDecay, Mshells_radii, Tshells_radii, Tshells_enclosedMass, Tshells_GPE, G, tol)
         # Compute the bigger array to contain the new radii
         Dshells_decayedRadii = newShellsRadii(Dshells_radii, Mshells_ellipseRadii)
         # Decay the mothers in the shells, distribute the new daughters
         Mshells_mass, Dshells_decayedMass = updateShellsMass(Dshells_decayedRadii, Mshells_ellipseRadii, Mshells_mass, p_undecayed)
         
-        # For checking how much daughter escaped
+        # # For checking how much daughter escaped
         # println(size(Mshells_ellipseRadii, 1))
         # println(count(i -> (i < 0), Mshells_ellipseRadii) / 2)
         # println(size(Dshells_decayedRadii, 1))
@@ -470,6 +470,6 @@ function withBar()
     return nothing
 end
 
-# dmOnly()
+dmOnly()
 # verify_NFW()
-withBar()
+# withBar()

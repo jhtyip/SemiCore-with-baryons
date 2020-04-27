@@ -1,4 +1,5 @@
 import random
+import math
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -412,24 +413,380 @@ import numpy as np
 # plt.show()
 
 
-index = ["0", "0.7", "2.1", "2.8", "4.9", "7.0", "9.1", "11.2", "13.3", "14.0"]
+# index = ["0", "0.7", "2.1", "2.8", "4.9", "7.0", "9.1", "11.2", "13.3", "14.0"]
 
-for i in index:
+# for i in index:
 
     
-    arrayTDM = np.loadtxt("withBar/50_3_459_20/TDM_t="+i+".txt")
-    arrayB = np.loadtxt("withBar/50_3_459_20/B_t="+i+".txt")
-    arrayT = np.loadtxt("withBar/50_3_459_20/T_t="+i+".txt")
+#     arrayTDM = np.loadtxt("withBar/50_3_459_20/TDM_t="+i+".txt")
+#     arrayB = np.loadtxt("withBar/50_3_459_20/B_t="+i+".txt")
+#     arrayT = np.loadtxt("withBar/50_3_459_20/T_t="+i+".txt")
 
 
-    plt.plot(arrayTDM[:, 2], arrayTDM[:, 6], label="total DM"+i)
-    plt.plot(arrayB[:, 2], arrayB[:, 6], label="baryon"+i)
-    plt.plot(arrayT[:, 2], arrayT[:, 6], label="total"+i)
+#     plt.plot(arrayTDM[:, 2], arrayTDM[:, 6], label="total DM"+i)
+#     plt.plot(arrayB[:, 2], arrayB[:, 6], label="baryon"+i)
+#     plt.plot(arrayT[:, 2], arrayT[:, 6], label="total"+i)
 
-    # plt.ylabel("total average density (Mo / kpc^3)")
-    plt.ylabel("average density (Mo / kpc^3)")
-    plt.xlabel("radius kpc")
-    plt.yscale("log")
-    plt.xscale("log")
-    plt.legend()
-    plt.show()
+#     # plt.ylabel("total average density (Mo / kpc^3)")
+#     plt.ylabel("average density (Mo / kpc^3)")
+#     plt.xlabel("radius kpc")
+#     plt.yscale("log")
+#     plt.xscale("log")
+#     plt.legend()
+#     plt.show()
+
+
+# arrayNFW = np.loadtxt("dmOnly_check/0.01_3_1307_20/T_t=0.txt")
+# array0 = np.loadtxt("dmOnly_check/0_3_1307_20/T_result.txt")
+# array0001 = np.loadtxt("dmOnly_check/0.001_3_1307_20/T_result.txt")
+# array001 = np.loadtxt("dmOnly_check/0.01_3_1307_20/T_result.txt")
+# array01 = np.loadtxt("dmOnly_check/0.1_3_1307_20/T_result.txt")
+# array1 = np.loadtxt("dmOnly_check/1_3_1307_20/T_result.txt")
+# array10 = np.loadtxt("dmOnly_check/10_3_1307_20/T_result.txt")
+
+
+# plt.plot(arrayNFW[:, 2], arrayNFW[:, 6], label="NFW")
+# plt.plot(array0[:, 2], array0[:, 6], label="v_k = 0 km/s")
+# plt.plot(array0001[:, 2], array0001[:, 6], label="v_k = 0.001 km/s")
+# plt.plot(array001[:, 2], array001[:, 6], label="v_k = 0.01 km/s")
+# plt.plot(array01[:, 2], array01[:, 6], label="v_k = 0.1 km/s")
+# plt.plot(array1[:, 2], array1[:, 6], label="v_k = 1 km/s")
+# plt.plot(array10[:, 2], array10[:, 6], label="v_k = 10 km/s")
+
+
+
+# plt.ylabel("total average density (Mo / kpc^3)")
+# plt.title("tau = 3 Gyr; results at t = 14 Gyr\nno daughter expansion")
+# plt.xlabel("radius kpc")
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+
+###########################################################################
+
+# Mo = 1.98847e30
+# kpc = 3.08567758128e19
+# H = 70 * 1000 / 1000 / kpc
+# G = 6.67430e-11 / kpc**3 * Mo
+
+# rho_c = 3 * H**2 / (8 * math.pi * G)
+# c = 23.6  # Concentration parameter
+# M_vir = 0.505e10  # Mo
+# rho_avg = 103.4 * rho_c
+
+# R_vir = (3 * M_vir / (4 * math.pi * rho_avg))**(1 / 3)
+# R_s = R_vir / c
+# rho_0 = M_vir / (4 * math.pi * (R_s**3)) / (math.log(1 + c) - c / (1 + c))
+
+# # index = ["0", "0.7", "2.1", "2.8", "4.9", "7.0", "9.1", "11.2", "13.3", "14.0"]
+# # indexNum = [0, 0.7, 2.1, 2.8, 4.9, 7.0, 9.1, 11.2, 13.3, 14.0]
+
+# index = ["0", "2.1", "4.9", "9.1", "14.0"]
+# indexNum = [0, 2.1, 4.9, 9.1, 14.0]
+
+# tau = 3
+# for j in np.arange(len(index)):
+#     i = index[j]
+#     t = indexNum[j]
+#     f = 1 - math.exp(math.log(0.5) * t / tau)
+
+
+#     #array = np.loadtxt("dmOnly_check/10000_3_459_20/T_t="+i+".txt")
+#     array = np.loadtxt("dmOnly_check_inf/1.0e50_3_459_40/T_t="+i+".txt")
+#     plt.plot(array[:, 2], array[:, 4], label="semicore(459): t = "+i+" Gyr")  
+#     # plt.plot(array[:, 1], array[:, 5], label="semicore(459): t = "+i+" Gyr")  
+
+#     array = np.loadtxt("dmOnly_check_inf/1.0e50_3_692_40/T_t="+i+".txt")
+#     plt.plot(array[:, 2], array[:, 4], label="semicore(692): t = "+i+" Gyr") 
+#     # plt.plot(array[:, 1], array[:, 5], label="semicore(692): t = "+i+" Gyr") 
+    
+#     theoryDen = ((1 - f)**4) * rho_0 / ((1 - f) * array[:, 2] / R_s) / ((1 + (1 - f) * array[:, 2] / R_s)**2)
+#     theoryEncMass = 4 * np.pi * (((1 - f)**4) * rho_0) * ((R_s / (1 - f))**3) * (np.log(1 + array[:, 1] / (R_s / (1 - f))) - array[:, 1] / (R_s / (1 - f) + array[:, 1]))
+
+#     plt.plot(array[:, 2], theoryDen, label="theory: t = "+i+" Gyr", linestyle="dashed")
+#     # plt.plot(array[:, 1], theoryEncMass, label="theory: t = "+i+" Gyr", linestyle="dashed")
+
+
+# plt.ylabel("shell density of total DM (Mo / kpc^3)")
+# # plt.ylabel("enclosed mass of total DM (Mo / kpc^3)")
+# plt.title("v_k = inf (1e50) km / s, tau = 3 Gyr\nno daughter expansion\nlabel = time (from 0 to 14 Gyr)")
+# plt.xlabel("radius (kpc)")
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+###########################################################################
+
+
+# array227 = np.loadtxt("dmOnly_check_spatialCon/20_3_227_20/T_result.txt")
+# array343 = np.loadtxt("dmOnly_check_spatialCon/20_3_343_20/T_result.txt")
+# array459 = np.loadtxt("dmOnly_check_spatialCon/20_3_459_20/T_result.txt")
+# array576 = np.loadtxt("dmOnly_check_spatialCon/20_3_576_20/T_result.txt")
+
+# plt.plot(array227[:, 2], array227[:, 6], label="227")
+# plt.plot(array343[:, 2], array343[:, 6], label="343")
+# plt.plot(array459[:, 2], array459[:, 6], label="459")
+# plt.plot(array576[:, 2], array576[:, 6], label="576")
+
+# plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.title("v_k = 20 km / s, tau = 3 Gyr\nno daughter expansion\nlabel = initNumOf_M_Shells")
+# plt.xlabel("radius (kpc)")
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+# array5 = np.loadtxt("dmOnly_check_temporalCon/20_3_459_5/T_result.txt")
+# array10 = np.loadtxt("dmOnly_check_temporalCon/20_3_459_10/T_result.txt")
+# array20 = np.loadtxt("dmOnly_check_temporalCon/20_3_459_20/T_result.txt")
+# array40 = np.loadtxt("dmOnly_check_temporalCon/20_3_459_40/T_result.txt")
+# array60 = np.loadtxt("dmOnly_check_temporalCon/20_3_459_60/T_result.txt")
+# array100 = np.loadtxt("dmOnly_check_temporalCon/20_3_459_100/T_result.txt")
+
+
+# plt.plot(array5[:, 2], array5[:, 6], label="5")
+# plt.plot(array10[:, 2], array10[:, 6], label="10")
+# plt.plot(array20[:, 2], array20[:, 6], label="20")
+# plt.plot(array40[:, 2], array40[:, 6], label="40")
+# plt.plot(array60[:, 2], array60[:, 6], label="60")
+# plt.plot(array100[:, 2], array100[:, 6], label="100")
+
+
+# plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.title("v_k = 20 km / s, tau = 3 Gyr\nno daughter expansion\nlabel = number of time steps")
+# plt.xlabel("radius (kpc)")
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+# array = np.loadtxt("dmOnly_check_0/0_3_459_40/M_t=0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="NFW")
+
+# array = np.loadtxt("dmOnly_check_0/0_3_459_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="0")
+
+# array = np.loadtxt("dmOnly_check_0/0.1_3_459_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="0.1")
+
+# array = np.loadtxt("dmOnly_check_0/1_3_459_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="1")
+
+# array = np.loadtxt("dmOnly_check_0/5_3_459_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="5")
+
+# plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.title("tau = 3 Gyr\nno daughter expansion\nlabel = v_k (km / s), at t = 14 Gyr")
+# plt.xlabel("radius (kpc)")
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+# h = 0.6727
+
+# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk20.00_tau3.00.txt")
+# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk20 tau3")
+
+# # array = np.loadtxt("dmOnly_check_xx/20_3_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="jy: vk20 tau3", linestyle="dashed")
+
+# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk20.00_tau6.93.txt")
+# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk20 tau6.93")
+
+# # array = np.loadtxt("dmOnly_check_xx/20_6.93_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="jy: vk20 tau6.93", linestyle="dashed")
+
+# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk20.00_tau14.00.txt")
+# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk20 tau14")
+
+# # array = np.loadtxt("dmOnly_check_xx/20_14_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="jy: vk20 tau14", linestyle="dashed")
+
+# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk30.00_tau3.00.txt")
+# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk30 tau3")
+
+# # array = np.loadtxt("dmOnly_check_xx/30_3_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="jy: vk30 tau3", linestyle="dashed")
+
+# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk30.00_tau6.93.txt")
+# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk30 tau6.93")
+
+# # array = np.loadtxt("dmOnly_check_xx/30_6.93_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="jy: vk30 tau6.93", linestyle="dashed")
+
+# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk30.00_tau14.00.txt")
+# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk30 tau14")
+
+# # array = np.loadtxt("dmOnly_check_xx/30_14_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="jy: vk30 tau14", linestyle="dashed")
+
+# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk40.00_tau3.00.txt")
+# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk40 tau3")
+
+# # array = np.loadtxt("dmOnly_check_xx/40_3_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="jy: vk40 tau3", linestyle="dashed")
+
+# array = np.loadtxt("semicoredata/ddm_halo-structure_vk40.00_tau6.93.txt")
+# plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk40 tau6.93")
+
+# array = np.loadtxt("dmOnly_check_xx/40_6.93_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="jy: vk40 tau6.93", linestyle="dashed")
+
+# array = np.loadtxt("semicoredata/ddm_halo-structure_vk40.00_tau14.00.txt")
+# plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk40 tau14")
+
+# array = np.loadtxt("dmOnly_check_xx/40_14_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="jy: vk40 tau14", linestyle="dashed")
+
+
+
+
+# plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.title("no daughter expansion\nat t = 14 Gyr")
+# plt.xlabel("radius (kpc)")
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+
+
+
+
+# array = np.loadtxt("dmOnly_check_xx/20_3_459_40/M_t=0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="NFW")
+
+# array = np.loadtxt("dmOnly_check_xx/20_3_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="vk20 tau3")
+
+# array = np.loadtxt("dmOnly_check_xx/20_6.93_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="vk20 tau6.93")
+
+# array = np.loadtxt("dmOnly_check_xx/20_14_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="vk20 tau14")
+
+# array = np.loadtxt("dmOnly_check_xx/30_3_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="vk30 tau3")
+
+# array = np.loadtxt("dmOnly_check_xx/30_6.93_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="vk30 tau6.93")
+
+# array = np.loadtxt("dmOnly_check_xx/30_14_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="vk30 tau14")
+
+# # array = np.loadtxt("dmOnly_check_xx/40_3_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="vk40 tau3", linestyle="dashed")
+
+# array = np.loadtxt("dmOnly_check_xx/40_6.93_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="vk40 tau6.93")
+
+# array = np.loadtxt("dmOnly_check_xx/40_14_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="vk40 tau14")
+
+
+# plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.title("no daughter expansion\nat t = 14 Gyr")
+# plt.xlabel("radius (kpc)")
+# plt.xlim(0.01, 10)
+# plt.ylim(1e6, 1e10)
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+
+# Mo = 1.98847e30  # kg
+# kpc = 3.08567758128e19  # m
+
+# G = 6.67430e-11 / (kpc**3) * Mo
+
+
+
+
+# array = np.loadtxt("dmOnly_check_xx/20_3_459_40/M_t=0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="NFW")
+
+# array = np.loadtxt("dmOnly_check_xx/20_3_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="vk20 tau3")
+
+# array = np.loadtxt("dmOnly_check_xx/20_6.93_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="vk20 tau6.93")
+
+# array = np.loadtxt("dmOnly_check_xx/20_14_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="vk20 tau14")
+
+# array = np.loadtxt("dmOnly_check_xx/30_3_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="vk30 tau3")
+
+# array = np.loadtxt("dmOnly_check_xx/30_6.93_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="vk30 tau6.93")
+
+# array = np.loadtxt("dmOnly_check_xx/30_14_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="vk30 tau14")
+
+# # array = np.loadtxt("dmOnly_check_xx/40_3_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="vk40 tau3", linestyle="dashed")
+
+# array = np.loadtxt("dmOnly_check_xx/40_6.93_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="vk40 tau6.93")
+
+# array = np.loadtxt("dmOnly_check_xx/40_14_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="vk40 tau14")
+
+
+# plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.title("orbital velocity\nno daughter expansion\nat t = 14 Gyr")
+# plt.xlabel("radius (kpc)")
+# # plt.xlim(0.01, 10)
+# # plt.ylim(1e6, 1e10)
+# # plt.yscale("log")
+# # plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+array = np.loadtxt("dmOnly_compare_MDadia_DadiaOff/30_6.93_576_40/M_t=0.txt")
+plt.plot(array[:, 1], array[:, 6], label="NFW")
+
+array = np.loadtxt("dmOnly_compare_MDadia_DadiaOff/30_6.93_576_40/T_result.txt")
+plt.plot(array[:, 1], array[:, 6], label="off")
+
+array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_result.txt")
+plt.plot(array[:, 1], array[:, 6], label="on")
+
+plt.ylabel("average density of total DM (Mo / kpc^3)")
+plt.title("daughter adiabatic expansion on/off\nresults at t = 14 Gyr")
+plt.xlabel("radius (kpc)")
+plt.xlim(0.01, 10)
+# plt.ylim(1e6, 1e10)
+plt.yscale("log")
+plt.xscale("log")
+plt.legend()
+plt.show()
+
+array = np.loadtxt("dmOnly_compare_MDadia_DadiaOff/30_6.93_576_40/M_t=0.txt")
+plt.plot(array[:, 2], array[:, 4], label="NFW")
+
+array = np.loadtxt("dmOnly_compare_MDadia_DadiaOff/30_6.93_576_40/T_result.txt")
+plt.plot(array[:, 2], array[:, 4], label="off")
+
+array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_result.txt")
+plt.plot(array[:, 2], array[:, 4], label="on")
+
+plt.ylabel("shell density of total DM (Mo / kpc^3)")
+plt.title("daughter adiabatic expansion on/off\nresults at t = 14 Gyr")
+plt.xlabel("radius (kpc)")
+plt.xlim(0.01, 10)
+# plt.ylim(1e6, 1e10)
+plt.yscale("log")
+plt.xscale("log")
+plt.legend()
+plt.show()
