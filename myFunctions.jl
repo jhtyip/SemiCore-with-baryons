@@ -356,6 +356,13 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
     # Tshells_radii is short as original
     # Tshells_radii_updated is extended 
     
+    # if size(Tshells_enclosedMass, 1) < size(shells_radii, 1)
+    #     println("adiabaticExpansion: shell sizes do not match by", size(shells_radii, 1) - size(Tshells_enclosedMass, 1))
+    #     for i in 1:size(shells_radii, 1) - size(Tshells_enclosedMass, 1)
+    #         push!(Tshells_enclosedMass, Tshells_enclosedMass[end])
+    #     end
+    # end
+
     expansionRatios = Tshells_enclosedMass[1:size(shells_radii, 1)] ./ Tshells_enclosedMass_updated[1:size(shells_radii, 1)]
     contractionCount = count(i -> (i < 1), expansionRatios)
     if contractionCount > 0
@@ -447,6 +454,8 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
                 totalLen += firstShellThickness * shellThicknessFactor ^ (r1_smallerThanID - 1)
             end
         else
+            # println(e1)
+            # println(shells_expandedRadii)
             println("adiabaticExpansion error: r1 = -1")  # Prompt error
         end
         if r2 != -1

@@ -742,7 +742,8 @@ import numpy as np
 # plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="vk40 tau14")
 
 
-# plt.ylabel("average density of total DM (Mo / kpc^3)")
+# # plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.ylabel("orbital velocity (km / s)")
 # plt.title("orbital velocity\nno daughter expansion\nat t = 14 Gyr")
 # plt.xlabel("radius (kpc)")
 # # plt.xlim(0.01, 10)
@@ -753,38 +754,39 @@ import numpy as np
 # plt.show()
 
 
-array = np.loadtxt("dmOnly_compare_MDadia_DadiaOff/30_6.93_576_40/M_t=0.txt")
+# array = np.loadtxt("dmOnly_compare_MDadia_DadiaOff/30_6.93_576_40/M_t=0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="NFW")
+
+# array = np.loadtxt("dmOnly_compare_MDadia_DadiaOff/30_6.93_576_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="off")
+
+# array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="on")
+
+# # plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.ylabel("orbital velocity (km / s)")
+# plt.title("daughter adiabatic expansion on/off\nresults at t = 14 Gyr")
+# plt.xlabel("radius (kpc)")
+# # plt.xlim(0.01, 10)
+# # plt.ylim(1e6, 1e10)
+# # plt.yscale("log")
+# # plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+array = np.loadtxt("dmOnly_check_adiaCon/30_6.93_576_40/M_t=0.txt")
 plt.plot(array[:, 1], array[:, 6], label="NFW")
 
-array = np.loadtxt("dmOnly_compare_MDadia_DadiaOff/30_6.93_576_40/T_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="off")
+for i in np.arange(6):
+    array = np.loadtxt("dmOnly_check_adiaCon/30_6.93_576_40/T_t=0.35.adiaCon="+str(i)+".txt")
+    plt.plot(array[:, 1], array[:, 6], label=i)
 
-array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="on")
 
 plt.ylabel("average density of total DM (Mo / kpc^3)")
-plt.title("daughter adiabatic expansion on/off\nresults at t = 14 Gyr")
+plt.title("convergence test on adiabatic expansion\nresults at t = 14 Gyr")
 plt.xlabel("radius (kpc)")
-plt.xlim(0.01, 10)
-# plt.ylim(1e6, 1e10)
-plt.yscale("log")
-plt.xscale("log")
-plt.legend()
-plt.show()
-
-array = np.loadtxt("dmOnly_compare_MDadia_DadiaOff/30_6.93_576_40/M_t=0.txt")
-plt.plot(array[:, 2], array[:, 4], label="NFW")
-
-array = np.loadtxt("dmOnly_compare_MDadia_DadiaOff/30_6.93_576_40/T_result.txt")
-plt.plot(array[:, 2], array[:, 4], label="off")
-
-array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_result.txt")
-plt.plot(array[:, 2], array[:, 4], label="on")
-
-plt.ylabel("shell density of total DM (Mo / kpc^3)")
-plt.title("daughter adiabatic expansion on/off\nresults at t = 14 Gyr")
-plt.xlabel("radius (kpc)")
-plt.xlim(0.01, 10)
+# plt.xlim(0.01, 10)
 # plt.ylim(1e6, 1e10)
 plt.yscale("log")
 plt.xscale("log")

@@ -62,7 +62,7 @@ function dmOnly()
     functionStart = time_ns()
     stepStart = time_ns()
 
-    folderName = "dmOnly_compare_MDadia_DadiaOn"
+    folderName = "dmOnly_check_adiaCon"
     if !isdir(folderName)
         mkdir(folderName)
     end
@@ -137,7 +137,7 @@ function dmOnly()
     println(g, t, "\t", timeTaken, "\t", totalDMmass, "\t", 0)
 
     # Rolling starts
-    for t in dt:dt:t_end
+    for t in dt:dt#:t_end
         stepStart = time_ns()
 
         println("Working on t=$t Gyr...")
@@ -186,6 +186,29 @@ function dmOnly()
         Mshells_radii, Mshells_mass = adiabaticExpansion(Mshells_radii, Mshells_mass, Tshells_enclosedMass, Tshells_enclosedMass_updated)
         Dshells_radii, Dshells_mass = adiabaticExpansion(Dshells_radii, Dshells_mass, Tshells_enclosedMass, Tshells_enclosedMass_updated)
         
+        # Test for adiabatic convergence
+        # adiaCon_numOfLoops = 10
+        # if adiaCon_numOfLoops != 0
+        #     Tshells_radii, Tshells_mass = totalShells(Mshells_radii, Dshells_radii, Mshells_mass, Dshells_mass)
+        #     Tshells_enclosedMass = enclosedMass(Tshells_radii, Tshells_mass)
+        #     TfileName = folderName * "/T_t=$t.adiaCon=0.txt"
+        #     printToFile(Tshells_radii, Tshells_mass, TfileName)
+        # end
+        # Tshells_enclosedMass_new = Tshells_enclosedMass_updated
+        # for i in 1:adiaCon_numOfLoops
+        #     Tshells_enclosedMass_old = Tshells_enclosedMass_new
+        #     Tshells_enclosedMass_new = Tshells_enclosedMass
+
+        #     Mshells_radii, Mshells_mass = adiabaticExpansion(Mshells_radii, Mshells_mass, Tshells_enclosedMass_old, Tshells_enclosedMass_new)
+        #     Dshells_radii, Dshells_mass = adiabaticExpansion(Dshells_radii, Dshells_mass, Tshells_enclosedMass_old, Tshells_enclosedMass_new)
+
+        #     Tshells_radii, Tshells_mass = totalShells(Mshells_radii, Dshells_radii, Mshells_mass, Dshells_mass)
+        #     Tshells_enclosedMass = enclosedMass(Tshells_radii, Tshells_mass)
+
+        #     TfileName = folderName * "/T_t=$t.adiaCon=$i.txt"
+        #     printToFile(Tshells_radii, Tshells_mass, TfileName)
+        # end
+
         # Update total Dshells
         Dshells_radii, Dshells_mass = totalShells(Dshells_radii, Dshells_decayedRadii, Dshells_mass, Dshells_decayedMass)
         # Update total mass shells
