@@ -22,25 +22,25 @@ const rho_c = 3 * H ^ 2 / (8 * pi * G)  # Critical density of the universe
 m_molar = 0.75 * 1.00784 + 0.25 * 4.002602;  # g mol-1
 m = m_molar / 1000 / 6.02214076e23 / Mo  # Mass per particle (75% hydrogen atom + 25% helium atom); kg to Mo
 
-aIndex = 5 / 3  # Adiabatic index: 5 / 3
+aIndex = 1.67  # Adiabatic index: 5 / 3
 
 # Parameters of Kim/XiaoXiong's halo
 c = 23.6  # Concentration parameter
 M_vir = 0.505e10  # Mo
 rho_avg = 103.4 * rho_c
 
-v_k_in_kms = 30
+v_k_in_kms = 20
 v_k = v_k_in_kms * 1000 / kpc # Recoil velocity of daughter particles; km s-1 to kpc s-1
-tau = 6.93  # Half-life of mother particles; Gyr
+tau = 14  # Half-life of mother particles; Gyr
 
 t_end = 14  # Age of the universe
-numOfSteps = 20  # 40+ is good enough
+numOfSteps = 40  # 40+ is good enough
 
 firstShellThickness = 1e-5  # Use 1e-n to see from 1e-(n-3) (conservative)
 shellThicknessFactor = 1.02  # Thickness of shell grows exponentially according to this factor
 
 initBarRho_0 = 1e9  # Initial baryon core density; Mo kpc-3; typical: 1e9
-T = 5e5  # Core temperature; K; Milky Way: 1e6
+initCoreT = 5e5  # Core temperature; K; Milky Way: 1e6
 
 barStopRho = 200 * rho_c  # Typical: 200x
 ####################################################################################################
@@ -50,6 +50,8 @@ R_vir = (3 * M_vir / (4 * pi * rho_avg)) ^ (1 / 3)
 R_s = R_vir / c
 rho_0 = M_vir / (4 * pi * R_s ^ 3) / (log(1 + c) - c / (1 + c))
 NFW_params = [rho_0, R_s, c]
+
+K = k * initCoreT / m / (initBarRho_0 ^ (aIndex - 1))  # Polytropic equation's proportionality constant
 
 initNumOf_M_Shells = floor(Int, log(1 - NFW_params[2] * NFW_params[3] / firstShellThickness * (1 - shellThicknessFactor)) / log(shellThicknessFactor)) + 1   # Determines initial shellThickness
 println("initNumOf_M_Shells: ", initNumOf_M_Shells, "\n")
@@ -97,7 +99,7 @@ function dmOnly()
     println(f, "firstShellThickness=", firstShellThickness)
     println(f, "shellThicknessFactor=", shellThicknessFactor)
     println(f, "initBarRho_0=", initBarRho_0)
-    println(f, "T=", T)
+    println(f, "initCoreT=", initCoreT)
     println(f, "barStopRho=", barStopRho)
     println(f, "R_vir=", R_vir)
     println(f, "R_s=", R_s)
@@ -184,7 +186,7 @@ function dmOnly()
 
         # Adiabatic expansions
         Mshells_radii, Mshells_mass = adiabaticExpansion(Mshells_radii, Mshells_mass, Tshells_enclosedMass, Tshells_enclosedMass_updated)
-        Dshells_radii, Dshells_mass = adiabaticExpansion(Dshells_radii, Dshells_mass, Tshells_enclosedMass, Tshells_enclosedMass_updated)
+        # Dshells_radii, Dshells_mass = adiabaticExpansion(Dshells_radii, Dshells_mass, Tshells_enclosedMass, Tshells_enclosedMass_updated)
         
         # Test for adiabatic convergence (bad)
         # adiaCon_numOfLoops = 10
@@ -276,7 +278,7 @@ function withBar()
     functionStart = time_ns()
     stepStart = time_ns()
 
-    folderName = "withBar"
+    folderName = "withBar_test_aIndex_1.67_constK"
     if !isdir(folderName)
         mkdir(folderName)
     end
@@ -311,7 +313,7 @@ function withBar()
     println(f, "firstShellThickness=", firstShellThickness)
     println(f, "shellThicknessFactor=", shellThicknessFactor)
     println(f, "initBarRho_0=", initBarRho_0)
-    println(f, "T=", T)
+    println(f, "initCoreT=", initCoreT)
     println(f, "barStopRho=", barStopRho)
     println(f, "R_vir=", R_vir)
     println(f, "R_s=", R_s)
@@ -332,13 +334,29 @@ function withBar()
     TDMshells_enclosedMass = enclosedMass(TDMshells_radii, TDMshells_mass)
 
     # Solve for the baryon mass profile
-    B_BC, B_params = barConditions(initBarRho_0, T, k, m, G, aIndex, firstShellThickness)
+    B_BC, B_params = barConditions(initBarRho_0, K, G, aIndex)
     Bshells_radii, Bshells_mass, Bshells_radii_hiRes, Bshells_rho_hiRes = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
 
     # Combine dark matter and baryons to get total mass shells
     Tshells_radii, Tshells_mass = totalShells(TDMshells_radii, Bshells_radii, TDMshells_mass, Bshells_mass)
     Tshells_enclosedMass = enclosedMass(Tshells_radii, Tshells_mass)
     Tshells_GPE = GPE(Tshells_radii, Tshells_mass, Tshells_enclosedMass, G)
+
+    # newBarRho_0 = initBarRho_0
+    # T = initCoreT
+    # totalBarMass = sum(Bshells_mass)
+    # for i in 1:100
+    #     println("")
+    #     Tshells_radii, Tshells_mass = totalShells(TDMshells_radii, Bshells_radii, TDMshells_mass, Bshells_mass)
+    #     Tshells_enclosedMass = enclosedMass(Tshells_radii, Tshells_mass)
+    #     Tshells_GPE = GPE(Tshells_radii, Tshells_mass, Tshells_enclosedMass, G)
+
+    #     totalBarMass_updated = barEscape(T, Tshells_GPE, Bshells_mass, m, k)
+
+    #     B_BC, B_params = barConditions(newBarRho_0, K, G, aIndex)
+    #     Bshells_radii, Bshells_mass, newBarRho_0, T, Bshells_radii_hiRes, Bshells_rho_hiRes = barProfileUpdate(totalBarMass_updated, barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass, tol_barGuess, K, G, m, k)
+    #     println("newBarRho_0: ", newBarRho_0)
+    # end
 
     MfileName = folderName * "/M_t=$t.txt"
     printToFile(Mshells_radii, Mshells_mass, MfileName)
@@ -366,9 +384,10 @@ function withBar()
     println("Baryon to DM ratio: 1 : ", barToDm)
     timeTaken = (time_ns() - stepStart) / 1e9
     println("Time taken for this step: ", timeTaken, "s\n")
-    println(g, t, "\t", timeTaken, "\t", totalDMmass, "\t", totalBarMass)
+    println(g, t, "\t", timeTaken, "\t", totalDMmass, "\t", totalBarMass, "\t", initBarRho_0, "\t", initCoreT, "\t", Bshells_radii_hiRes[end])
 
     newBarRho_0 = initBarRho_0
+    newCoreT = initCoreT
     for t in dt:dt:t_end
         stepStart = time_ns()
 
@@ -422,20 +441,31 @@ function withBar()
         # Prepare latest enclosed mass for potential DM adiabatic expansion
         Tshells_radii, Tshells_mass = totalShells(TDMshells_radii, Bshells_radii, TDMshells_mass, Bshells_mass)
         Tshells_enclosedMass = enclosedMass(Tshells_radii, Tshells_mass)
+        Tshells_GPE = GPE(Tshells_radii, Tshells_mass, Tshells_enclosedMass, G)
 
-        # Update baryon given total baryon mass conserved
-        B_BC, B_params = barConditions(newBarRho_0, T, k, m, G, aIndex, firstShellThickness)
-        Bshells_radii, Bshells_mass, newBarRho_0, Bshells_radii_hiRes, Bshells_rho_hiRes = barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass, tol_barGuess)
+        # Implement the escape mechanism of some baryon mass as a part of the response to the changed GPE
+        # totalBarMass = barEscape(newCoreT, Tshells_GPE, Bshells_mass, m, k)
+        # Update baryon given a total baryon mass
+        B_BC, B_params = barConditions(newBarRho_0, K, G, aIndex)
+        Bshells_radii, Bshells_mass, newBarRho_0, newCoreT, Bshells_radii_hiRes, Bshells_rho_hiRes = barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass, tol_barGuess, K, G, m, k)
         println("newBarRho_0: ", newBarRho_0)
 
         # Prepared updated enclosed mass for potential DM adiabatic expansion
         Tshells_radii_updated, Tshells_mass_updated = totalShells(TDMshells_radii, Bshells_radii, TDMshells_mass, Bshells_mass)
         Tshells_enclosedMass_updated = enclosedMass(Tshells_radii_updated, Tshells_mass_updated)
+        Tshells_GPE_updated = GPE(Tshells_radii_updated, Tshells_mass_updated, Tshells_enclosedMass_updated, G)
 
         ########################### Iteration goes here
-        # DM adiabatic
-        # Solve bar
-        # Loop...
+        # # DM adiabatic
+        # Mshells_radii, Mshells_mass = adiabaticExpansion(Mshells_radii, Mshells_mass, Tshells_enclosedMass, Tshells_enclosedMass_updated)
+        # Dshells_radii, Dshells_mass = adiabaticExpansion(Dshells_radii, Dshells_mass, Tshells_enclosedMass, Tshells_enclosedMass_updated)
+        # # Solve bar
+        # TDMshells_radii, TDMshells_mass = totalShells(Dshells_radii, Mshells_radii, Dshells_mass, Mshells_mass)
+        # TDMshells_enclosedMass = enclosedMass(TDMshells_radii, TDMshells_mass)
+        # B_BC, B_params = barConditions(newBarRho_0, K, G, aIndex)
+        # Bshells_radii, Bshells_mass, newBarRho_0, newCoreT, Bshells_radii_hiRes, Bshells_rho_hiRes = barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass, tol_barGuess, K, G, m, k)
+        # println("newBarRho_0: ", newBarRho_0)
+        # # Loop... or just once
         ########################### Iteration ends
 
         # No harm to make sure
@@ -465,7 +495,7 @@ function withBar()
         println("Total baryon mass: ", totalBarMass, " Mo")
         timeTaken = (time_ns() - stepStart) / 1e9
         println("Time taken for this step: ", timeTaken, "s\n")
-        println(g, t, "\t", timeTaken, "\t", totalDMmass, "\t", totalBarMass)
+        println(g, t, "\t", timeTaken, "\t", totalDMmass, "\t", totalBarMass, "\t", newBarRho_0, "\t", newCoreT, "\t", Bshells_radii_hiRes[end])
     end
 
         MfileName = folderName * "/M_result.txt"

@@ -703,10 +703,10 @@ import numpy as np
 
 
 
-# Mo = 1.98847e30  # kg
-# kpc = 3.08567758128e19  # m
+Mo = 1.98847e30  # kg
+kpc = 3.08567758128e19  # m
 
-# G = 6.67430e-11 / (kpc**3) * Mo
+G = 6.67430e-11 / (kpc**3) * Mo
 
 
 
@@ -794,30 +794,231 @@ import numpy as np
 # plt.show()
 
 
-aIndices = ["1.2", "1.5", "1.67", "1.6666666666666667"]
-aIndices = ["1.67"]
-for i in aIndices:
+# aIndices = ["1.2", "1.5", "1.67", "1.6666666666666667"]
+# aIndices = ["1.67"]
+# for i in aIndices:
 
-    indexNum = [0, 0.7, 2.1, 2.8, 4.9, 7.0, 9.1, 11.2, 13.3, 14.0]
+#     indexNum = [0, 0.7, 2.1, 2.8, 4.9, 7.0, 9.1, 11.2, 13.3, 14.0]
+#     indexNum = [0, 14.0]
 
-    # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/BhiRes_t=0.txt")
-    # # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/B_t=0.txt")
-    # # plt.plot(array[:, 1], array[:, 6], label=i + ", init", linestyle="dashed")
-    # plt.plot(array[:, 0], array[:, 1], label=i + ", init", linestyle="dashed")
+#     # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/BhiRes_t=0.txt")
+#     # # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/B_t=0.txt")
+#     # # plt.plot(array[:, 1], array[:, 6], label=i + ", init", linestyle="dashed")
+#     # plt.plot(array[:, 0], array[:, 1], label=i + ", init", linestyle="dashed")
 
-    for j in indexNum:
+#     for j in indexNum:
 
-        array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/BhiRes_t="+str(j)+".txt")
-        # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/B_result.txt")
-        # plt.plot(array[:, 1], array[:, 6], label=i)
-        plt.plot(array[:, 0], array[:, 1], label="t = "+str(j))
+#         # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/BhiRes_t="+str(j)+".txt")
+#         # # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/B_result.txt")
+#         # # plt.plot(array[:, 1], array[:, 6], label=i)
+#         # plt.plot(array[:, 0], array[:, 1], label="t = "+str(j), linestyle="dashed")
+        
+#         array = np.loadtxt("withBar_test_aIndex_"+i+"_constK/30_6.93_576_20/BhiRes_t="+str(j)+".txt")
+#         # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/B_result.txt")
+#         # plt.plot(array[:, 1], array[:, 6], label=i)
+#         plt.plot(array[:, 0], array[:, 1], label="t = "+str(j)+" ", linestyle="dashed")
 
-plt.ylabel("density of baryon (Mo / kpc^3)")
-plt.title("results at different times\nv_k = 30 km / s, tau = 6.93 Gyr")
+#         array = np.loadtxt("withBar_test_aIndex_"+i+"_constK_escaped/30_6.93_576_20/BhiRes_t="+str(j)+".txt")
+#         # array = np.loadtxt("withBar_test_aIndex_"+i+"/30_6.93_576_20/B_result.txt")
+#         # plt.plot(array[:, 1], array[:, 6], label=i)
+#         plt.plot(array[:, 0], array[:, 1], label="t = "+str(j)+" (with escaped)")
+
+
+# plt.ylabel("density of baryon (Mo / kpc^3)")
+# plt.title("results at different times\nv_k = 30 km / s, tau = 6.93 Gyr")
+# plt.xlabel("radius (kpc)")
+# # plt.xlim(0.01, 10)
+# # plt.ylim(1e6, 1e10)
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+# ####################### baryon density
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_40/BhiRes_t=0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="t = 0 Gyr")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_40/BhiRes_t=14.0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="t = 14 Gyr")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK_withIter/30_6.93_576_40/BhiRes_t=14.0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="t = 14 Gyr (with iter)", linestyle="dashed")
+
+# # array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_20/BhiRes_t=14.0.txt")
+# # plt.plot(array[:, 0], array[:, 1], label="t = 14 Gyr (20)")
+
+# plt.ylabel("shell density of baryon (Mo / kpc^3)")
+# plt.title("v_k = 30 km / s, tau = 6.93 Gyr, initCoreT = 5e5 K, initBarRho_0 = 1e9 Mo / kpc^3")
+# plt.xlabel("radius (kpc)")
+# plt.xlim(0, 1.4)
+# plt.ylim(0, 1.1e9)
+# # plt.yscale("log")
+# # plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+# ######################## dm density
+# array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_t=0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="NFW")
+
+# array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="without baryon")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_40/TDM_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="with baryon")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK_withIter/30_6.93_576_40/TDM_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="with baryon (with iter)", linestyle="dashed")
+
+# # array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_20/BhiRes_t=14.0.txt")
+# # plt.plot(array[:, 0], array[:, 1], label="t = 14 Gyr (20)")
+
+# plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.title("v_k = 30 km / s, tau = 6.93 Gyr, initCoreT = 5e5 K, initBarRho_0 = 1e9 Mo / kpc^3")
+# plt.xlabel("radius (kpc)")
+# # plt.xlim(0, 1.4)
+# # plt.ylim(0, 1.1e9)
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+# ######################## orbital v
+# array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_t=0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="NFW")
+
+# array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="without baryon")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="with baryon")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK_withIter/30_6.93_576_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="with baryon (with iter)", linestyle="dashed")
+
+# # array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_20/BhiRes_t=14.0.txt")
+# # plt.plot(array[:, 0], array[:, 1], label="t = 14 Gyr (20)")
+
+# plt.ylabel("orbital velocity (km / s)")
+# plt.title("v_k = 30 km / s, tau = 6.93 Gyr, initCoreT = 5e5 K, initBarRho_0 = 1e9 Mo / kpc^3")
+# plt.xlabel("radius (kpc)")
+# # plt.xlim(0, 1.4)
+# # plt.ylim(0, 1.1e9)
+# # plt.yscale("log")
+# # plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+# ####################### baryon density many
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_40/BhiRes_t=0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="t = 0 Gyr")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/20_3_576_40/BhiRes_t=14.0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(20, 3)")
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/20_6.39_576_40/BhiRes_t=14.0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(20, 6.93)")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_3_576_40/BhiRes_t=14.0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(30, 3)")
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_40/BhiRes_t=14.0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(30, 6.93)")
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_14_576_40/BhiRes_t=14.0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(30, 14)")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/40_3_576_40/BhiRes_t=14.0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(40, 3)")
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/40_6.93_576_40/BhiRes_t=14.0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(40, 6.93)")
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/40_14_576_40/BhiRes_t=14.0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(40, 14)")
+
+
+# # array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_20/BhiRes_t=14.0.txt")
+# # plt.plot(array[:, 0], array[:, 1], label="t = 14 Gyr (20)")
+
+# plt.ylabel("shell density of baryon (Mo / kpc^3)")
+# plt.title("(v_k in km / s, tau in Gyr) at t = 14 Gyr, initCoreT = 5e5 K, initBarRho_0 = 1e9 Mo / kpc^3")
+# plt.xlabel("radius (kpc)")
+# plt.xlim(0, 1.4)
+# plt.ylim(0, 1.1e9)
+# # plt.yscale("log")
+# # plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+# ######################## dm density many
+# array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_t=0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="NFW")
+
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/20_3_576_40/TDM_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(20, 3)")
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/20_6.39_576_40/TDM_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(20, 6.93)")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_3_576_40/TDM_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(30, 3)")
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_40/TDM_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(30, 6.93)")
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_14_576_40/TDM_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(30, 14)")
+
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/40_3_576_40/TDM_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(40, 3)")
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/40_6.93_576_40/TDM_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(40, 6.93)")
+# array = np.loadtxt("withBar_test_aIndex_1.67_constK/40_14_576_40/TDM_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(40, 14)")
+
+
+# # array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_20/BhiRes_t=14.0.txt")
+# # plt.plot(array[:, 0], array[:, 1], label="t = 14 Gyr (20)")
+
+# plt.ylabel("average density of total DM (Mo / kpc^3)")
+# plt.title("(v_k in km / s, tau in Gyr) at t = 14 Gyr with baryon, initCoreT = 5e5 K, initBarRho_0 = 1e9 Mo / kpc^3")
+# plt.xlabel("radius (kpc)")
+# # plt.xlim(0, 1.4)
+# # plt.ylim(0, 1.1e9)
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+######################## orbital v many
+array = np.loadtxt("dmOnly_compare_MDadia_DadiaOn/30_6.93_576_40/T_t=0.txt")
+plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="NFW")
+
+array = np.loadtxt("withBar_test_aIndex_1.67_constK/20_3_576_40/T_t=14.0.txt")
+plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(20, 3)")
+array = np.loadtxt("withBar_test_aIndex_1.67_constK/20_6.39_576_40/T_t=14.0.txt")
+plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(20, 6.93)")
+
+array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_3_576_40/T_t=14.0.txt")
+plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(30, 3)")
+array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_6.93_576_40/T_t=14.0.txt")
+plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(30, 6.93)")
+array = np.loadtxt("withBar_test_aIndex_1.67_constK/30_14_576_40/T_t=14.0.txt")
+plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(30, 14)")
+
+array = np.loadtxt("withBar_test_aIndex_1.67_constK/40_3_576_40/T_t=14.0.txt")
+plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(40, 3)")
+array = np.loadtxt("withBar_test_aIndex_1.67_constK/40_6.93_576_40/T_t=14.0.txt")
+plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(40, 6.93)")
+array = np.loadtxt("withBar_test_aIndex_1.67_constK/40_14_576_40/T_t=14.0.txt")
+plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(40, 14)")
+
+
+plt.ylabel("orbital velocity (km / s)")
+plt.title("(v_k in km / s, tau in Gyr) at t = 14 Gyr with baryon, initCoreT = 5e5 K, initBarRho_0 = 1e9 Mo / kpc^3")
 plt.xlabel("radius (kpc)")
-# plt.xlim(0.01, 10)
-# plt.ylim(1e6, 1e10)
-plt.yscale("log")
-plt.xscale("log")
+# plt.xlim(0, 1.4)
+# plt.ylim(0, 1.1e9)
+# plt.yscale("log")
+# plt.xscale("log")
 plt.legend()
 plt.show()

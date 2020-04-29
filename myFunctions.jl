@@ -364,14 +364,44 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
     # end
 
     expansionRatios = Tshells_enclosedMass[1:size(shells_radii, 1)] ./ Tshells_enclosedMass_updated[1:size(shells_radii, 1)]
+
+    # Hotfix for expansion ratio very close to 1
+    for i in 1:size(expansionRatios, 1)
+        expansionRatios[i] = round(expansionRatios[i], digits=3)  # I just picked digits=3
+    end
+    # To check if it actaully contracts instead of expanding. But this doesn't really matter
     contractionCount = count(i -> (i < 1), expansionRatios)
     if contractionCount > 0
-        println("adiabaticExpansion: expansion ratio smaller than 1, i.e. NOT expanding. Count: ", contractionCount, ", min ratio: ", findmin(expansionRatios)[1])
+        # println("adiabaticExpansion: expansion ratio smaller than 1, i.e. NOT expanding. Count: ", contractionCount, ", min ratio: ", findmin(expansionRatios)[1])
         # zeros(NaN)  # To cause error, halting the program
     end
 
     # shells_expandedRadii = shells_radii[:, 3] .* expansionRatios
     shells_expandedRadii = shells_radii[:, 2] .* expansionRatios  # Use 2 or 3?
+
+    # To make sure expandedRadii is "monotonic"
+    violationCount = 0
+    checkedEntry = -1
+    while checkedEntry != size(shells_expandedRadii, 1) - 1
+        checkedEntry = -1
+        for i in 1:size(shells_expandedRadii, 1) - 1
+            if shells_expandedRadii[i] > shells_expandedRadii[i + 1]
+                violationCount += 1
+                
+                eR_1 = shells_expandedRadii[i]
+                eR_2 = shells_expandedRadii[i + 1]
+                shells_expandedRadii[i] = eR_2
+                shells_expandedRadii[i + 1] = eR_1
+
+                break
+            else
+                checkedEntry = i
+            end
+        end
+    end
+    if violationCount > 0
+        println("adiabaticExpansion: violationCount = ", violationCount)
+    end
 
     expandedShells_radii = newShellsRadii(shells_radii, shells_expandedRadii)
     expandedShells_mass = zeros(size(expandedShells_radii, 1))
@@ -453,10 +483,15 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
                 r1_smallerThanID += 1
                 totalLen += firstShellThickness * shellThicknessFactor ^ (r1_smallerThanID - 1)
             end
+            if r1_smallerThanID > size(shells_radii, 1)
+                println("adiabatic Expansion error: r1 > outermost radius")
+                continue  # Hotfix to weird boundary cases
+            end
         else
             # println(e1)
             # println(shells_expandedRadii)
             println("adiabaticExpansion error: r1 = -1")  # Prompt error
+            continue  # Hotfix to weird boundary cases
         end
         if r2 != -1
             totalLen = 0
@@ -471,7 +506,7 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
         
         expandedShells_mass[i] += shells_mass[r1_smallerThanID] * (1 - (r1 ^ 3 - shells_radii[r1_smallerThanID, 1] ^ 3) / (shells_radii[r1_smallerThanID, 2] ^ 3 - shells_radii[r1_smallerThanID, 1] ^ 3))
         if r2_smallerThanID == -1
-            expandedShells_mass[i] += shells_mass[end]  # This is why the density is always weird at the end
+            expandedShells_mass[i] += shells_mass[end]  # This is why the density is always weird at the end (solved)
             r2_smallerThanID = size(shells_radii, 1)
         else
             expandedShells_mass[i] += shells_mass[r2_smallerThanID] * (1 - (shells_radii[r2_smallerThanID, 2] ^ 3 - r2 ^ 3) / (shells_radii[r2_smallerThanID, 2] ^ 3 - shells_radii[r2_smallerThanID, 1] ^ 3))
@@ -521,8 +556,10 @@ end
 
 
 ######################################### For withBar() ############################################
-function barConditions(barRho_0, T, k, m, G, aIndex, firstShellThickness)
-    C = (4 * pi * G * m * barRho_0 ^ (aIndex - 1)) / (aIndex * k * T )
+function barConditions(barRho_0, K, G, aIndex)
+    # C = (4 * pi * G * m * barRho_0 ^ (aIndex - 1)) / (aIndex * k * T )
+
+    C = 4 * pi * G / K / aIndex
 
     B_BC = [barRho_0, 0]
     B_params = [aIndex, C]
@@ -627,18 +664,19 @@ function barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclo
 end
 
 
-function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass, tol_barGuess)
+function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass, tol_barGuess, K, G, m, k)
     initBarRho_0 = B_BC[1]
+    aIndex = B_params[1]
 
     foo, Bshells_mass_now, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
     totalBarMass_now = sum(Bshells_mass_now)
 
     rhoUp = initBarRho_0 * 2
-    B_BC, B_params = barConditions(rhoUp, T, k, m, G, aIndex, firstShellThickness)
+    B_BC, B_params = barConditions(rhoUp, K, G, aIndex)
     foo, Bshells_mass_rhoUp, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
     totalBarMass_rhoUp = sum(Bshells_mass_rhoUp)
     rhoDown = initBarRho_0 / 2 
-    B_BC, B_params = barConditions(rhoDown, T, k, m, G, aIndex, firstShellThickness)
+    B_BC, B_params = barConditions(rhoDown, K, G, aIndex)
     foo, Bshells_mass_rhoDown, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
     totalBarMass_rhoDown = sum(Bshells_mass_rhoDown)
     
@@ -665,21 +703,21 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
         end
     end
 
-    rhoGuess = initBarRho_0 * 2 ^ twice_or_half_rho
-    B_BC, B_params = barConditions(rhoGuess, T, k, m, G, aIndex, firstShellThickness)
+    rhoGuess = initBarRho_0 * float(2) ^ twice_or_half_rho  # For some unknown reason, require float()
+    B_BC, B_params = barConditions(rhoGuess, K, G, aIndex)
     foo, Bshells_mass_rhoGuess, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
     totalBarMass_rhoGuess = sum(Bshells_mass_rhoGuess)
     if guess_for_higher_or_lower == 1  # Guess until the guess is higher than the conserved mass
         while totalBarMass_rhoGuess < totalBarMass
             rhoGuess *= 2 ^ twice_or_half_rho  # Update guess in the according direction
-            B_BC, B_params = barConditions(rhoGuess, T, k, m, G, aIndex, firstShellThickness)
+            B_BC, B_params = barConditions(rhoGuess, K, G, aIndex)
             foo, Bshells_mass_rhoGuess, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
             totalBarMass_rhoGuess = sum(Bshells_mass_rhoGuess)
         end
     elseif guess_for_higher_or_lower == -1  # Guess until the guess is lower than the conserved mass
         while totalBarMass_rhoGuess > totalBarMass
             rhoGuess *= 2 ^ twice_or_half_rho
-            B_BC, B_params = barConditions(rhoGuess, T, k, m, G, aIndex, firstShellThickness)
+            B_BC, B_params = barConditions(rhoGuess, K, G, aIndex)
             foo, Bshells_mass_rhoGuess, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
             totalBarMass_rhoGuess = sum(Bshells_mass_rhoGuess)
         end
@@ -692,7 +730,7 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
     M_b = totalBarMass_rhoGuess
 
     c = (a + b) / 2
-    B_BC, B_params = barConditions(c, T, k, m, G, aIndex, firstShellThickness)
+    B_BC, B_params = barConditions(c, K, G, aIndex)
     Bshells_radii_c, Bshells_mass_c, Bshells_radii_hiRes, Bshells_rho_hiRes = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
     M_c = sum(Bshells_mass_c)
     counter = 0
@@ -712,7 +750,7 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
         end
 
         c = (a + b) / 2
-        B_BC, B_params = barConditions(c, T, k, m, G, aIndex, firstShellThickness)
+        B_BC, B_params = barConditions(c, K, G, aIndex)
         Bshells_radii_c, Bshells_mass_c, Bshells_radii_hiRes, Bshells_rho_hiRes = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
         M_c = sum(Bshells_mass_c)
 
@@ -723,9 +761,34 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
         end
     end
 
-    println("radius of galaxy: ", Bshells_radii_c[end, 3])
+    println("radius of galaxy: ", Bshells_radii_hiRes[end])
 
-    return Bshells_radii_c, Bshells_mass_c, c, Bshells_radii_hiRes, Bshells_rho_hiRes
+    T = K * m / k * c ^ (aIndex - 1)
+
+    return Bshells_radii_c, Bshells_mass_c, c, T, Bshells_radii_hiRes, Bshells_rho_hiRes
+end
+
+
+function barEscape(T, Tshells_GPE, Bshells_mass, m, k)
+    totalBarMass = sum(Bshells_mass)
+    
+    Bshells_escapeV = zeros(size(Bshells_mass, 1))
+    for i in 1:size(Bshells_escapeV, 1)
+        Bshells_escapeV[i] = (-Tshells_GPE[i] * 2) ^ (1 / 2) 
+    end
+
+    integrand(v) = 4 * pi * v ^ 2 * (m / (2 * pi * k * T)) ^ (3 / 2) * exp(-m * v ^ 2 / (2 * k * T))
+    for i in 1:size(Bshells_mass, 1)
+        retainedFraction = quadgk(integrand, 0, Bshells_escapeV[i])[1]
+        Bshells_mass[i] *= retainedFraction
+    end
+
+    totalBarMass_updated = sum(Bshells_mass)
+
+    # println("v_rms = ", (3 * k * T / m) ^ (1 / 2), " kpc / s, max escapeV = ", findmax(Bshells_escapeV)[1], " kpc / s, min escapeV = ", findmin(Bshells_escapeV)[1], " kpc / s")
+    println("% escaped: ", (1 - totalBarMass_updated / totalBarMass) * 100, "%")
+
+    return totalBarMass_updated
 end
 
 
