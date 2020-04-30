@@ -40,7 +40,7 @@ function printToFile_verify_NFW_GPE(fileName, Tshells_radii, Tshells_GPE, NFWshe
 end
 
 
-function printToFile_NFW_EffPotentialProfile(fileName, Mshells_radii, potentialProfile)
+function printToFile_NFW_effPotentialProfile(fileName, Mshells_radii, potentialProfile)
     f = open(fileName, "w")
 
     for i in 1:size(Mshells_radii, 1)
@@ -183,7 +183,7 @@ end
 
 
 # Solve for r_min, r_max of the elliptical orbit of a decayed particle from an original r_0 (one of the shell radii) orbit
-function ellipseSolver(r_0, L, totalE_afterDecay, shells_radii, Tshells_radii, Tshells_enclosedMass, Tshells_GPE, G, tol)
+function ellipseSolver(r_0, L, totalE_afterDecay, shells_radii, Tshells_radii, Tshells_enclosedMass, Tshells_GPE, G, tol_ellipseGuess)
     # Search in [l1, l2] U [r1, r2] using the bisection method
 
     firstShellThickness = shells_radii[1, 2]  # To be used as a tolerance
@@ -214,7 +214,7 @@ function ellipseSolver(r_0, L, totalE_afterDecay, shells_radii, Tshells_radii, T
 
     # Bisection method
     lastDiff = 0
-    while (l2 - l1 > firstShellThickness * tol) && (l2 - l1 != lastDiff)
+    while (l2 - l1 > firstShellThickness * tol_ellipseGuess) && (l2 - l1 != lastDiff)
         lastDiff = l2 - l1
         l3 = (l1 + l2) / 2
         energyEquation_value = energyEquation(l3, L, totalE_afterDecay, Tshells_radii, Tshells_GPE, Tshells_enclosedMass)
@@ -228,7 +228,7 @@ function ellipseSolver(r_0, L, totalE_afterDecay, shells_radii, Tshells_radii, T
         end
     end
     lastDiff = 0
-    while (r2 - r1 > firstShellThickness * tol) && (r2 - r1 != lastDiff)
+    while (r2 - r1 > firstShellThickness * tol_ellipseGuess) && (r2 - r1 != lastDiff)
         lastDiff = r2 - r1
         r3 = (r2 + r1) / 2
         energyEquation_value = energyEquation(r3, L, totalE_afterDecay, Tshells_radii, Tshells_GPE, Tshells_enclosedMass)
@@ -249,10 +249,10 @@ end
 
 
 # Return ellipse array
-function ellipseRadii(shells_L, shells_totalE_afterDecay, shells_radii, Tshells_radii, Tshells_enclosedMass, Tshells_GPE, G, tol)
+function ellipseRadii(shells_L, shells_totalE_afterDecay, shells_radii, Tshells_radii, Tshells_enclosedMass, Tshells_GPE, G, tol_ellipseGuess)
     shells_ellipseRadii = zeros(size(shells_radii, 1), 2)
     for i in 1:size(shells_ellipseRadii, 1)
-        root1, root2 = ellipseSolver(shells_radii[i, 3], shells_L[i], shells_totalE_afterDecay[i], shells_radii, Tshells_radii, Tshells_enclosedMass, Tshells_GPE, G, tol)
+        root1, root2 = ellipseSolver(shells_radii[i, 3], shells_L[i], shells_totalE_afterDecay[i], shells_radii, Tshells_radii, Tshells_enclosedMass, Tshells_GPE, G, tol_ellipseGuess)
 
         shells_ellipseRadii[i, 1] = root1
         shells_ellipseRadii[i, 2] = root2
@@ -269,7 +269,7 @@ function newShellsRadii(shells_radii, shells_ellipseRadii)
 
     totalLen = 0
     newNumOfShells = 0
-    while totalLen <= maxEllipseRadius
+    while totalLen <= maxEllipseRadius  # Why not use < instead? Can be justified by shell radii describe the interval [a, b), which is consistent with beginning from 0
         newNumOfShells += 1
         # totalLen += newNumOfShells * firstShellThickness
         totalLen += firstShellThickness * shellThicknessFactor ^ (newNumOfShells - 1)
@@ -365,10 +365,10 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
 
     expansionRatios = Tshells_enclosedMass[1:size(shells_radii, 1)] ./ Tshells_enclosedMass_updated[1:size(shells_radii, 1)]
 
-    # Hotfix for expansion ratio very close to 1
-    for i in 1:size(expansionRatios, 1)
-        expansionRatios[i] = round(expansionRatios[i], digits=3)  # I just picked digits=3
-    end
+    # # Hotfix for expansion ratio very close to 1 (maybe not)
+    # for i in 1:size(expansionRatios, 1)
+    #     expansionRatios[i] = round(expansionRatios[i], digits=3)  # I just picked digits=3
+    # end
     # To check if it actaully contracts instead of expanding. But this doesn't really matter
     contractionCount = count(i -> (i < 1), expansionRatios)
     if contractionCount > 0
@@ -377,9 +377,9 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
     end
 
     # shells_expandedRadii = shells_radii[:, 3] .* expansionRatios
-    shells_expandedRadii = shells_radii[:, 2] .* expansionRatios  # Use 2 or 3?
+    shells_expandedRadii = shells_radii[:, 2] .* expansionRatios  # Use 2 or 3? 2
 
-    # To make sure expandedRadii is "monotonic"
+    # To make sure expandedRadii is "monotonic" (never seen useful)
     violationCount = 0
     checkedEntry = -1
     while checkedEntry != size(shells_expandedRadii, 1) - 1
@@ -423,31 +423,6 @@ function adiabaticExpansion(shells_radii, shells_mass, Tshells_enclosedMass, Tsh
                 break
             end
         end
-
-        # if e1_smallerThanID == 1
-        #     m = (shells_radii[e1_smallerThanID, 3] - 0) / (shells_expandedRadii[e1_smallerThanID] - 0)
-        #     c = 0
-        #     r1 = m * e1 + c
-        # elseif e1_smallerThanID != -1
-        #     m = (shells_radii[e1_smallerThanID, 3] - shells_radii[e1_smallerThanID - 1, 3]) / (shells_expandedRadii[e1_smallerThanID] - shells_expandedRadii[e1_smallerThanID - 1])
-        #     c = shells_radii[e1_smallerThanID, 3] - m * shells_expandedRadii[e1_smallerThanID]
-        #     r1 = m * e1 + c
-        # else
-        #     r1 = -1  # Should never happen
-        # end
-
-        # if e2_smallerThanID == 1
-        #     m = (shells_radii[e2_smallerThanID, 3] - 0) / (shells_expandedRadii[e2_smallerThanID] - 0)
-        #     c = 0
-        #     r2 = m * e2 + c
-        # elseif e2_smallerThanID != -1
-        #     m = (shells_radii[e2_smallerThanID, 3] - shells_radii[e2_smallerThanID - 1, 3]) / (shells_expandedRadii[e2_smallerThanID] - shells_expandedRadii[e2_smallerThanID - 1])
-        #     c = shells_radii[e2_smallerThanID, 3] - m * shells_expandedRadii[e2_smallerThanID]
-        #     r2 = m * e2 + c
-        # else
-        #     r2 = -1  # Will happen once
-        #     println("adiabaticExpansion: r2 = -1")
-        # end
 
         if e1_smallerThanID == 1
             m = (shells_radii[e1_smallerThanID, 2] - 0) / (shells_expandedRadii[e1_smallerThanID] - 0)
@@ -638,6 +613,7 @@ function barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclo
         zeros(NaN)  # To cause error, halting the program
     end
 
+    # Convert to a format consistent with Xshells_radii, Xshells_mass
     Bshells_radii = newShellsRadii(TDMshells_radii, Bshells_shellRadii)
     Bshells_mass = zeros(size(Bshells_radii, 1))
     for i in 1:size(Bshells_radii, 1)
@@ -657,25 +633,28 @@ function barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclo
         end
     end
 
+    # Keep the high resolution version
     Bshells_radii_hiRes = Bshells_shellRadii
-    Bshells_rho_hiRes = Bshells_rho_d0
+    Bshells_rho_hiRes = Bshells_rho_d0  # This is rho, not mass
 
     return Bshells_radii, Bshells_mass, Bshells_radii_hiRes, Bshells_rho_hiRes
 end
 
 
-function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass, tol_barGuess, K, G, m, k)
-    initBarRho_0 = B_BC[1]
+function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass, tol_barGuess, K, G)
+    barRho_0_now = B_BC[1]
     aIndex = B_params[1]
 
+    # Calculate totalBarMass if we keep the same barRho_0
     foo, Bshells_mass_now, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
     totalBarMass_now = sum(Bshells_mass_now)
 
-    rhoUp = initBarRho_0 * 2
+    # Calculate totalBarMass if we increase / decrease barRho_0
+    rhoUp = barRho_0_now * 2
     B_BC, B_params = barConditions(rhoUp, K, G, aIndex)
     foo, Bshells_mass_rhoUp, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
     totalBarMass_rhoUp = sum(Bshells_mass_rhoUp)
-    rhoDown = initBarRho_0 / 2 
+    rhoDown = barRho_0_now / 2 
     B_BC, B_params = barConditions(rhoDown, K, G, aIndex)
     foo, Bshells_mass_rhoDown, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
     totalBarMass_rhoDown = sum(Bshells_mass_rhoDown)
@@ -703,7 +682,7 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
         end
     end
 
-    rhoGuess = initBarRho_0 * float(2) ^ twice_or_half_rho  # For some unknown reason, require float()
+    rhoGuess = barRho_0_now * float(2) ^ twice_or_half_rho  # For some unknown reason, require float()
     B_BC, B_params = barConditions(rhoGuess, K, G, aIndex)
     foo, Bshells_mass_rhoGuess, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
     totalBarMass_rhoGuess = sum(Bshells_mass_rhoGuess)
@@ -722,9 +701,8 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
             totalBarMass_rhoGuess = sum(Bshells_mass_rhoGuess)
         end
     end
-        
-
-    a = initBarRho_0
+    
+    a = barRho_0_now
     M_a = totalBarMass_now
     b = rhoGuess
     M_b = totalBarMass_rhoGuess
@@ -761,34 +739,9 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
         end
     end
 
-    println("radius of galaxy: ", Bshells_radii_hiRes[end])
-
     T = K * m / k * c ^ (aIndex - 1)
 
     return Bshells_radii_c, Bshells_mass_c, c, T, Bshells_radii_hiRes, Bshells_rho_hiRes
-end
-
-
-function barEscape(T, Tshells_GPE, Bshells_mass, m, k)
-    totalBarMass = sum(Bshells_mass)
-    
-    Bshells_escapeV = zeros(size(Bshells_mass, 1))
-    for i in 1:size(Bshells_escapeV, 1)
-        Bshells_escapeV[i] = (-Tshells_GPE[i] * 2) ^ (1 / 2) 
-    end
-
-    integrand(v) = 4 * pi * v ^ 2 * (m / (2 * pi * k * T)) ^ (3 / 2) * exp(-m * v ^ 2 / (2 * k * T))
-    for i in 1:size(Bshells_mass, 1)
-        retainedFraction = quadgk(integrand, 0, Bshells_escapeV[i])[1]
-        Bshells_mass[i] *= retainedFraction
-    end
-
-    totalBarMass_updated = sum(Bshells_mass)
-
-    # println("v_rms = ", (3 * k * T / m) ^ (1 / 2), " kpc / s, max escapeV = ", findmax(Bshells_escapeV)[1], " kpc / s, min escapeV = ", findmin(Bshells_escapeV)[1], " kpc / s")
-    println("% escaped: ", (1 - totalBarMass_updated / totalBarMass) * 100, "%")
-
-    return totalBarMass_updated
 end
 
 
@@ -815,6 +768,30 @@ function shellTrimmer(shells_radii, shells_mass)
     end
  
     return shells_radii[1:end - numOfZeros, :], shells_mass[1:end - numOfZeros]
+end
+
+
+# Removing the "Boltzmann tail" of baryon particles
+function barEscape(T, Tshells_GPE, Bshells_mass, m, k)
+    totalBarMass = sum(Bshells_mass)
+    
+    Bshells_escapeV = zeros(size(Bshells_mass, 1))
+    for i in 1:size(Bshells_escapeV, 1)
+        Bshells_escapeV[i] = (-Tshells_GPE[i] * 2) ^ (1 / 2) 
+    end
+
+    integrand(v) = 4 * pi * v ^ 2 * (m / (2 * pi * k * T)) ^ (3 / 2) * exp(-m * v ^ 2 / (2 * k * T))
+    for i in 1:size(Bshells_mass, 1)
+        retainedFraction = quadgk(integrand, 0, Bshells_escapeV[i])[1]
+        Bshells_mass[i] *= retainedFraction
+    end
+
+    totalBarMass_updated = sum(Bshells_mass)
+
+    # println("v_rms = ", (3 * k * T / m) ^ (1 / 2), " kpc / s, max escapeV = ", findmax(Bshells_escapeV)[1], " kpc / s, min escapeV = ", findmin(Bshells_escapeV)[1], " kpc / s")
+    println("% escaped: ", (1 - totalBarMass_updated / totalBarMass) * 100, "%")
+
+    return totalBarMass_updated
 end
 
 
