@@ -6,4 +6,4 @@ All other files are not necessary.
 Developed and maintained by Jacky H. T. Yip  
 Credits to Prof. Ming-Chung Chu, Jianxiong Chen (Xiaoxiong), Kiu-Ching Leung (Kim), Wai-Cheong Lee (Cheong)
 
-Physics Department, The Chinese University of Hong Kong
+Department of Physics, The Chinese University of Hong Kong
