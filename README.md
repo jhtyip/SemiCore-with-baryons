@@ -1,5 +1,4 @@
-main.jl - the main program script
-myFunctions.jl - contains all functions called in main.jl
+main.jl - the main program script\nmyFunctions.jl - contains all functions called in main.jl
 
 All other files are not necessary.
 
