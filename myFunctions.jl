@@ -682,20 +682,20 @@ function barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_ra
         end
     end
 
-    rhoGuess = barRho_0_now * float(2) ^ twice_or_half_rho  # For some unknown reason, require float()
+    rhoGuess = barRho_0_now * float(2) ^ twice_or_half_rho  # For some unknown reason, require float() (also below)
     B_BC, B_params = barConditions(rhoGuess, K, G, aIndex)
     foo, Bshells_mass_rhoGuess, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
     totalBarMass_rhoGuess = sum(Bshells_mass_rhoGuess)
     if guess_for_higher_or_lower == 1  # Guess until the guess is higher than the conserved mass
         while totalBarMass_rhoGuess < totalBarMass
-            rhoGuess *= 2 ^ twice_or_half_rho  # Update guess in the according direction
+            rhoGuess *= float(2) ^ twice_or_half_rho  # Update guess in the according direction
             B_BC, B_params = barConditions(rhoGuess, K, G, aIndex)
             foo, Bshells_mass_rhoGuess, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
             totalBarMass_rhoGuess = sum(Bshells_mass_rhoGuess)
         end
     elseif guess_for_higher_or_lower == -1  # Guess until the guess is lower than the conserved mass
         while totalBarMass_rhoGuess > totalBarMass
-            rhoGuess *= 2 ^ twice_or_half_rho
+            rhoGuess *= float(2) ^ twice_or_half_rho
             B_BC, B_params = barConditions(rhoGuess, K, G, aIndex)
             foo, Bshells_mass_rhoGuess, foo, foo = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
             totalBarMass_rhoGuess = sum(Bshells_mass_rhoGuess)

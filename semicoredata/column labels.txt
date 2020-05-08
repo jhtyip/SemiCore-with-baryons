@@ -1,1 +1,0 @@
-radius, mom mass, dau mass, total mass, mom den, dau den

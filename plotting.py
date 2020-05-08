@@ -4,10 +4,13 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
+from matplotlib import rc
+
 Mo = 1.98847e30  # kg
 kpc = 3.08567758128e19  # m
 
 G = 6.67430e-11 / (kpc**3) * Mo
+h = 0.6727
 
 # index = ["0", "0.7", "1.4", "2.1", "2.8", "3.5", "4.2", "4.9", "5.6", "6.3", "7.0", "7.7", "8.4", "9.1", "9.8", "10.5", "11.2", "11.9", "12.6", "13.3", "14.0"]
 # index = ["0", "2.1", "2.8", "4.9", "7.0", "9.1", "11.2", "13.3"]
@@ -593,7 +596,7 @@ G = 6.67430e-11 / (kpc**3) * Mo
 # plt.legend()
 # plt.show()
 
-# h = 0.6727
+
 
 # # array = np.loadtxt("semicoredata/ddm_halo-structure_vk20.00_tau3.00.txt")
 # # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk20 tau3")
@@ -613,41 +616,41 @@ G = 6.67430e-11 / (kpc**3) * Mo
 # # array = np.loadtxt("dmOnly_check_xx/20_14_459_40/T_t=14.0.txt")
 # # plt.plot(array[:, 1], array[:, 6], label="jy: vk20 tau14", linestyle="dashed")
 
-# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk30.00_tau3.00.txt")
-# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk30 tau3")
+# array = np.loadtxt("semicoredata_xx/ddm_halo-structure_vk30.00_tau3.00.txt")
+# plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk30 tau3")
 
-# # array = np.loadtxt("dmOnly_check_xx/30_3_459_40/T_t=14.0.txt")
-# # plt.plot(array[:, 1], array[:, 6], label="jy: vk30 tau3", linestyle="dashed")
+# array = np.loadtxt("dmOnly_check_xx/30_3_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="jy: vk30 tau3", linestyle="dashed")
 
-# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk30.00_tau6.93.txt")
-# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk30 tau6.93")
+# array = np.loadtxt("semicoredata_xx/ddm_halo-structure_vk30.00_tau6.93.txt")
+# plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk30 tau6.93")
 
-# # array = np.loadtxt("dmOnly_check_xx/30_6.93_459_40/T_t=14.0.txt")
-# # plt.plot(array[:, 1], array[:, 6], label="jy: vk30 tau6.93", linestyle="dashed")
+# array = np.loadtxt("dmOnly_check_xx/30_6.93_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="jy: vk30 tau6.93", linestyle="dashed")
 
-# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk30.00_tau14.00.txt")
-# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk30 tau14")
+# array = np.loadtxt("semicoredata_xx/ddm_halo-structure_vk30.00_tau14.00.txt")
+# plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk30 tau14")
 
-# # array = np.loadtxt("dmOnly_check_xx/30_14_459_40/T_t=14.0.txt")
-# # plt.plot(array[:, 1], array[:, 6], label="jy: vk30 tau14", linestyle="dashed")
+# array = np.loadtxt("dmOnly_check_xx/30_14_459_40/T_t=14.0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="jy: vk30 tau14", linestyle="dashed")
 
-# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk40.00_tau3.00.txt")
-# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk40 tau3")
+# # # array = np.loadtxt("semicoredata/ddm_halo-structure_vk40.00_tau3.00.txt")
+# # # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk40 tau3")
 
-# # array = np.loadtxt("dmOnly_check_xx/40_3_459_40/T_t=14.0.txt")
-# # plt.plot(array[:, 1], array[:, 6], label="jy: vk40 tau3", linestyle="dashed")
+# # # array = np.loadtxt("dmOnly_check_xx/40_3_459_40/T_t=14.0.txt")
+# # # plt.plot(array[:, 1], array[:, 6], label="jy: vk40 tau3", linestyle="dashed")
 
-# array = np.loadtxt("semicoredata/ddm_halo-structure_vk40.00_tau6.93.txt")
-# plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk40 tau6.93")
+# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk40.00_tau6.93.txt")
+# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk40 tau6.93")
 
-# array = np.loadtxt("dmOnly_check_xx/40_6.93_459_40/T_t=14.0.txt")
-# plt.plot(array[:, 1], array[:, 6], label="jy: vk40 tau6.93", linestyle="dashed")
+# # array = np.loadtxt("dmOnly_check_xx/40_6.93_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="jy: vk40 tau6.93", linestyle="dashed")
 
-# array = np.loadtxt("semicoredata/ddm_halo-structure_vk40.00_tau14.00.txt")
-# plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk40 tau14")
+# # array = np.loadtxt("semicoredata/ddm_halo-structure_vk40.00_tau14.00.txt")
+# # plt.plot(array[:, 0]/h, array[:, 3]/(4/3*np.pi*(array[:, 0]**3))*(10**10)*(h**2), label="xx: vk40 tau14")
 
-# array = np.loadtxt("dmOnly_check_xx/40_14_459_40/T_t=14.0.txt")
-# plt.plot(array[:, 1], array[:, 6], label="jy: vk40 tau14", linestyle="dashed")
+# # array = np.loadtxt("dmOnly_check_xx/40_14_459_40/T_t=14.0.txt")
+# # plt.plot(array[:, 1], array[:, 6], label="jy: vk40 tau14", linestyle="dashed")
 
 
 
@@ -1100,48 +1103,550 @@ G = 6.67430e-11 / (kpc**3) * Mo
 # plt.show()
 
 
-array = np.loadtxt("dmOnly_baryonEffectIter=dmOnlyControl/30_6.93_576_40/T_t=0.txt")
-plt.plot(array[:, 1], array[:, 6], label="NFW", linestyle="dashed")
+# array = np.loadtxt("dmOnly_baryonEffectIter=dmOnlyControl/30_6.93_576_40/T_t=0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="NFW", linestyle="dashed")
 
-array = np.loadtxt("dmOnly_baryonEffectIter=dmOnlyControl/30_6.93_576_40/T_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="dmOnly_1e-5", linestyle="dotted")
+# array = np.loadtxt("dmOnly_baryonEffectIter=dmOnlyControl/30_6.93_576_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="dmOnly_1e-5", linestyle="dotted")
 
-array = np.loadtxt("dmOnly/30_6.93_116_40/T_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="dmOnly_lowRes_1e-1", linestyle="dotted")
+# array = np.loadtxt("dmOnly/30_6.93_116_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="dmOnly_lowRes_1e-1", linestyle="dotted")
 
-array = np.loadtxt("dmOnly/30_6.93_227_40/T_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="dmOnly_lowRes_1e-2", linestyle="dotted")
+# array = np.loadtxt("dmOnly/30_6.93_227_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="dmOnly_lowRes_1e-2", linestyle="dotted")
 
-array = np.loadtxt("dmOnly/30_6.93_343_40/T_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="dmOnly_lowRes_1e-3", linestyle="dotted")
+# array = np.loadtxt("dmOnly/30_6.93_343_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="dmOnly_lowRes_1e-3", linestyle="dotted")
 
-array = np.loadtxt("dmOnly/30_6.93_459_40/T_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="dmOnly_lowRes_1e-4", linestyle="dotted")
+# array = np.loadtxt("dmOnly/30_6.93_459_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="dmOnly_lowRes_1e-4", linestyle="dotted")
 
-array = np.loadtxt("withBar_baryonEffectIter=0/30_6.93_576_40/TDM_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="0")
+# array = np.loadtxt("withBar_baryonEffectIter=0/30_6.93_576_40/TDM_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="0")
 
-array = np.loadtxt("withBar_baryonEffectIter=1/30_6.93_576_40/TDM_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="1")
+# array = np.loadtxt("withBar_baryonEffectIter=1/30_6.93_576_40/TDM_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="1")
 
-array = np.loadtxt("withBar_baryonEffectIter=2/30_6.93_576_40/TDM_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="2")
+# array = np.loadtxt("withBar_baryonEffectIter=2/30_6.93_576_40/TDM_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="2")
 
-array = np.loadtxt("withBar_baryonEffectIter=5/30_6.93_576_40/TDM_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="5")
+# array = np.loadtxt("withBar_baryonEffectIter=5/30_6.93_576_40/TDM_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="5")
 
-array = np.loadtxt("withBar_baryonEffectIter=10/30_6.93_576_40/TDM_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="10")
+# array = np.loadtxt("withBar_baryonEffectIter=10/30_6.93_576_40/TDM_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="10")
 
-array = np.loadtxt("withBar_baryonEffectIter=20/30_6.93_576_40/TDM_result.txt")
-plt.plot(array[:, 1], array[:, 6], label="20")
+# array = np.loadtxt("withBar_baryonEffectIter=20/30_6.93_576_40/TDM_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="20")
 
-plt.ylabel("average density of DM (Mo / kpc^3)")
-plt.title("v_k = 30 km / s, tau = 6.93 Gyr at t = 14 Gyr, initCoreT = 5e5 K, initBarRho_0 = 1e9 Mo / kpc^3")
-plt.xlabel("radius (kpc)")
-plt.xlim(1e-1, 50)
-plt.ylim(1e4, 1e9)
-plt.yscale("log")
-plt.xscale("log")
-plt.legend()
-plt.show()
+# plt.ylabel("average density of DM (Mo / kpc^3)")
+# plt.title("v_k = 30 km / s, tau = 6.93 Gyr at t = 14 Gyr, initCoreT = 5e5 K, initBarRho_0 = 1e9 Mo / kpc^3")
+# plt.xlabel("radius (kpc)")
+# plt.xlim(1e-1, 50)
+# plt.ylim(1e4, 1e9)
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+
+
+
+
+
+
+# array = np.loadtxt("withBar_withoutIter/30_6.93_493_40/T_t=0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="withBar, t=0")
+# array = np.loadtxt("withBar_withoutIter/30_6.93_493_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="withBar_withoutIter, t=14")
+# array = np.loadtxt("withBar_withIter/30_6.93_493_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="withBar_withIter, t=14")
+
+# array = np.loadtxt("withBar_withoutIter/30_6.93_493_40/TDM_t=0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="withoutBar, t=0 (NFW)")
+# array = np.loadtxt("dmOnly/30_6.93_493_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="withoutBar, t=14")
+
+
+
+
+# plt.ylabel("orbital velocity (km / s)")
+# plt.title("v_k = 30 km / s, tau = 6.93 Gyr")
+# plt.xlabel("radius (kpc)")
+# # plt.xlim(1e-1, 50)
+# # plt.ylim(1e4, 1e9)
+# # plt.yscale("log")
+# # plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+# array = np.loadtxt("withBar_withoutIter/30_6.93_493_40/TDM_t=0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="withBar, t=0")
+# array = np.loadtxt("withBar_withoutIter/30_6.93_493_40/TDM_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="withBar_withoutIter, t=14")
+# array = np.loadtxt("withBar_withIter/30_6.93_493_40/TDM_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="withBar_withIter, t=14")
+
+# array = np.loadtxt("withBar_withoutIter/30_6.93_493_40/TDM_t=0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="withoutBar, t=0 (NFW)")
+# array = np.loadtxt("dmOnly/30_6.93_493_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="withoutBar, t=14")
+
+
+
+
+# plt.ylabel("DM density (km / s)")
+# plt.title("v_k = 30 km / s, tau = 6.93 Gyr")
+# plt.xlabel("radius (kpc)")
+# # plt.xlim(1e-1, 50)
+# # plt.ylim(1e4, 1e9)
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+# array = np.loadtxt("withBar_withoutIter/30_6.93_493_40/GPE_t=0.txt")
+# plt.plot(array[:, 2], (-array[:, 3] * 2)**0.5*kpc/1000, label="withBar, t=0")
+# array = np.loadtxt("withBar_withoutIter/30_6.93_493_40/GPE_result.txt")
+# plt.plot(array[:, 2], (-array[:, 3] * 2)**0.5*kpc/1000, label="withBar_withoutIter, t=14")
+# array = np.loadtxt("withBar_withIter/30_6.93_493_40/GPE_result.txt")
+# plt.plot(array[:, 2], (-array[:, 3] * 2)**0.5*kpc/1000, label="withBar_withIter, t=14")
+
+# array = np.loadtxt("withBar_withoutIter/30_6.93_493_40/GPE_t=0.txt")
+# plt.plot(array[:, 2], (-array[:, 3] * 2)**0.5*kpc/1000, label="withoutBar, t=0 (NFW)")
+# array = np.loadtxt("dmOnly/30_6.93_493_40/GPE_result.txt")
+# plt.plot(array[:, 2], (-array[:, 3] * 2)**0.5*kpc/1000, label="withoutBar, t=14")
+
+
+
+
+# plt.ylabel("escape velocity (km / s)")
+# plt.title("v_k = 30 km / s, tau = 6.93 Gyr")
+# plt.xlabel("radius (kpc)")
+# # plt.xlim(1e-1, 50)
+# # plt.ylim(1e4, 1e9)
+# # plt.yscale("log")
+# # plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+# array = np.loadtxt("dmOnly_DDO161/40_3_261_40/T_t=0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="NFW")
+
+# array = np.loadtxt("dmOnly_DDO161/40_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(40, 3)")
+# array = np.loadtxt("dmOnly_DDO161/40_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(40, 7)")
+# array = np.loadtxt("dmOnly_DDO161/40_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(40, 14)")
+
+# array = np.loadtxt("dmOnly_DDO161/60_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(60, 3)")
+# array = np.loadtxt("dmOnly_DDO161/60_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(60, 14)")
+# array = np.loadtxt("dmOnly_DDO161/60_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(60, 14)")
+
+# array = np.loadtxt("dmOnly_DDO161/80_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(80, 3)")
+# array = np.loadtxt("dmOnly_DDO161/80_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(80, 7)")
+# array = np.loadtxt("dmOnly_DDO161/80_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(80, 14)")
+
+# array = np.loadtxt("dmOnly_DDO161/200_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(200, 3)")
+# array = np.loadtxt("dmOnly_DDO161/200_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(200, 7)")
+# array = np.loadtxt("dmOnly_DDO161/200_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(200, 14)")
+
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_3_261_40/T_t=0.txt")
+# plt.plot(array[:, 1], array[:, 6], label="NFW")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(40, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(40, 7)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(40, 14)")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/60_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(60, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/60_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(60, 14)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/60_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(60, 14)")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/80_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(80, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/80_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(80, 7)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/80_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(80, 14)")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/200_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(200, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/200_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(200, 7)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/200_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], array[:, 6], label="(200, 14)")
+
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_3_261_40/BhiRes_t=0.txt")
+# plt.plot(array[:, 0], array[:, 1], label="NFW")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_3_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(40, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_7_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(40, 7)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_14_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(40, 14)")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/60_3_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(60, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/60_7_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(60, 14)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/60_14_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(60, 14)")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/80_3_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(80, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/80_7_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(80, 7)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/80_14_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(80, 14)")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/200_3_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(200, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/200_7_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(200, 7)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/200_14_261_40/BhiRes_result.txt")
+# plt.plot(array[:, 0], array[:, 1], label="(200, 14)")
+
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_3_261_40/T_t=0.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="NFW")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(40, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(40, 7)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/40_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(40, 14)")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/60_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(60, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/60_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(60, 14)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/60_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(60, 14)")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/80_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(80, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/80_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(80, 7)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/80_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(80, 14)")
+
+# array = np.loadtxt("withBar_withoutIter_DDO161/200_3_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(200, 3)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/200_7_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(200, 7)")
+# array = np.loadtxt("withBar_withoutIter_DDO161/200_14_261_40/T_result.txt")
+# plt.plot(array[:, 1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="(200, 14)")
+
+# # plt.yscale("log")
+# # plt.xscale("log")
+# plt.legend()
+# plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# lw=1
+
+# array = np.loadtxt("dmOnly_DDO161/30_3_377_20/T_t=0.txt")
+# plt.plot(array[:,1], array[:,6], label="NFW", lw=lw)
+
+# array = np.loadtxt("dmOnly_DDO161/30_3_377_20/T_result.txt")
+# plt.plot(array[:,1], array[:,6], label="30, 3", lw=lw)
+
+# array = np.loadtxt("withBar_DDO161/30_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="30, 3; with baryon", lw=lw)
+
+# array = np.loadtxt("withBar_withIter_DDO161/30_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="30, 3; with baryon with iter", linestyle="dashed", lw=lw)
+
+# array = np.loadtxt("dmOnly_DDO161/70_3_377_20/T_result.txt")
+# plt.plot(array[:,1], array[:,6], label="70, 3", lw=lw)
+
+# array = np.loadtxt("withBar_DDO161/70_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="70, 3; with baryon", lw=lw)
+
+# array = np.loadtxt("withBar_withIter_DDO161/70_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="70, 3; with baryon with iter", linestyle="dashed", lw=lw)
+
+# # array = np.loadtxt("dmOnly_DDO161/30_3_377_20/T_result.txt")
+# # plt.plot(array[:,1], array[:,6], label="30, 3")
+
+# # array = np.loadtxt("dmOnly_DDO161/40_3_377_20/T_result.txt")
+# # plt.plot(array[:,1], array[:,6], label="40, 3")
+
+# plt.yscale("log")
+# plt.xscale("log")
+# plt.xlim(0.5, 100)
+# plt.ylim(1e4, 1e8)
+# # plt.legend()
+# plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/BhiRes_t=0.txt")
+# plt.plot(array[:,0], array[:,1]/10**6, label="Initial", lw=1, linestyle="dotted", color="blue")
+
+# # array = np.loadtxt("withBar_DDO161/50_3_377_20/BhiRes_t=0.7.txt")
+# # plt.plot(array[:,0], array[:,1]/10**6, label="t = 0.7 Gyr", lw=1, color="blue")
+# # array = np.loadtxt("withBar_withIter_DDO161/50_3_377_20/BhiRes_t=0.7.txt")
+# # plt.plot(array[:,0], array[:,1]/10**6, label="t = 0.7 Gyr (w/ iter.)", linestyle="dashed", lw=1, color="green")
+
+# # array = np.loadtxt("withBar_DDO161/50_3_377_20/BhiRes_t=3.5.txt")
+# # plt.plot(array[:,0], array[:,1]/10**6, label="t = 3.5 Gyr", lw=1.7, color="blue")
+# # array = np.loadtxt("withBar_withIter_DDO161/50_3_377_20/BhiRes_t=3.5.txt")
+# # plt.plot(array[:,0], array[:,1]/10**6, label="t = 3.5 Gyr (w/ iter.)", linestyle="dashed", lw=1.7, color="green")
+
+# # array = np.loadtxt("withBar_DDO161/50_3_377_20/BhiRes_result.txt")
+# # plt.plot(array[:,0], array[:,1]/10**6, label="t = 14 Gyr", lw=4, color="blue")
+# # array = np.loadtxt("withBar_withIter_DDO161/50_3_377_20/BhiRes_result.txt")
+# # plt.plot(array[:,0], array[:,1]/10**6, label="t = 14 Gyr (w/ iter.)", linestyle="dashed", lw=4, color="green")
+
+# plt.ticklabel_format(axis='y', style="sci", scilimits=(0,0))
+
+
+# plt.ylabel(r'Baryon density $\rho_B$ [10$^6$ M$_{\odot}$ kpc$^{-3}$]')
+# plt.xlabel(r'Radius r [kpc]')
+# plt.legend()
+# plt.show()
+
+
+
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/TDM_t=0.txt")
+# plt.plot(array[:,1], array[:,6], label="NFW", color="black", linestyle="dotted", lw=1.5)
+
+# array = np.loadtxt("dmOnly_DDO161/50_3_377_20/T_result.txt")
+# plt.plot(array[:,1], array[:,6], label="DM only", color="black", lw=1.5)
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="w/ baryons", color="blue", lw=1.5)
+
+# array = np.loadtxt("withBar_withIter_DDO161/50_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="w/ baryons & iter.", color="green", linestyle="dashed", lw=1.5)
+
+# plt.ylabel(r'DM density $\rho_{DM}$ [M$_{\odot}$ kpc$^{-3}$]')
+# plt.xlabel(r'Radius r [kpc]')
+# plt.xscale("log")
+# plt.yscale("log")
+# plt.ylim(1e4, 1e8)
+# plt.xlim(0.5, 100)
+# plt.legend()
+# plt.show()
+
+
+
+
+
+
+
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/TDM_t=0.txt")
+# plt.plot(array[:,1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="NFW (DM only)", linestyle="dotted", color="black")
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/T_t=0.txt")
+# plt.plot(array[:,1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="w/ baryons (initial)", linestyle="dotted", color="blue")
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/B_t=0.txt")
+# plt.plot(array[:,1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, linestyle="dotted", color="red")
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/T_result.txt")
+# plt.plot(array[:,1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="w/ baryons (at 14 Gyr)", color="blue")
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/B_result.txt")
+# plt.plot(array[:,1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, color="red")
+
+# array = np.loadtxt("withBar_withIter_DDO161/50_3_377_20/T_result.txt")
+# plt.plot(array[:,1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, label="w/ baryons & iter. (at 14 Gyr)", linestyle="dashed", color="green")
+# array = np.loadtxt("withBar_withIter_DDO161/50_3_377_20/B_result.txt")
+# plt.plot(array[:,1], ((G*array[:, 5]/array[:, 1])**(0.5))*kpc/1000, linestyle="dashed", color="red")
+
+# plt.ylabel(r'Orbital velocity [km s$^{-1}$]')
+# plt.xlabel(r'Radius r [kpc]')
+# plt.ylim(0, 70)
+# plt.xlim(0, 15)
+# plt.legend()
+# plt.show()
+
+
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/GPE_t=0.txt")
+# plt.plot(array[:,1], array[:,3]/10**(-29), label="Initial", lw=1, linestyle="dotted", color="blue")
+
+# # array = np.loadtxt("withBar_DDO161/50_3_377_20/GPE_t=0.7.txt")
+# # plt.plot(array[:,1], array[:,3]/10**(-29), label="t = 0.7 Gyr", lw=1, color="blue")
+# # array = np.loadtxt("withBar_withIter_DDO161/50_3_377_20/GPE_t=0.7.txt")
+# # plt.plot(array[:,1], array[:,3]/10**(-29), label="t = 0.7 Gyr (w/ iter.)", linestyle="dashed", lw=1, color="green")
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/GPE_t=3.5.txt")
+# plt.plot(array[:,1], array[:,3]/10**(-29), label="t = 3.5 Gyr", lw=1.7, color="blue")
+# # array = np.loadtxt("withBar_withIter_DDO161/50_3_377_20/GPE_t=3.5.txt")
+# # plt.plot(array[:,1], array[:,3]/10**(-29), label="t = 3.5 Gyr (w/ iter.)", linestyle="dashed", lw=1.7, color="green")
+
+# # array = np.loadtxt("withBar_DDO161/50_3_377_20/GPE_result.txt")
+# # plt.plot(array[:,1], array[:,3]/10**(-29), label="t = 14 Gyr", lw=4, color="blue")
+# # array = np.loadtxt("withBar_withIter_DDO161/50_3_377_20/GPE_result.txt")
+# # plt.plot(array[:,1], array[:,3]/10**(-29), label="t = 14 Gyr (w/ iter.)", linestyle="dashed", lw=4, color="green")
+
+# # plt.ticklabel_format(axis='y', style="sci", scilimits=(0,0))
+
+
+# plt.ylabel(r'Gravitational potential [10$^{-29}$ kpc$^2$ s$^{-2}$]')
+# plt.xlabel(r'Radius r [kpc]')
+# # plt.xscale("log")
+# plt.xlim(5, 100)
+# plt.ylim(-1.8, 0)
+# plt.legend()
+# plt.show()
+
+
+
+
+
+
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/TDM_t=0.txt")
+# plt.plot(array[:,1], array[:,6], label="NFW", color="black", linestyle="dotted", lw=1.5)
+
+# array = np.loadtxt("dmOnly_DDO161/50_3_377_20/T_result.txt")
+# plt.plot(array[:,1], array[:,6], label="DM only", color="black", lw=1.5)
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="w/ baryons", color="blue", lw=1.5)
+
+# array = np.loadtxt("withBar_withIter_DDO161/50_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="w/ baryons & iter.", color="green", linestyle="dashed", lw=1.5)
+
+# plt.ylabel(r'DM density $\rho_{DM}$ [M$_{\odot}$ kpc$^{-3}$]')
+# plt.xlabel(r'Radius r [kpc]')
+# plt.xscale("log")
+# plt.yscale("log")
+# plt.ylim(1e4, 1e8)
+# plt.xlim(0.5, 100)
+# plt.legend()
+# plt.show()
+
+
+
+
+
+
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/TDM_t=0.txt")
+# plt.plot(array[:,1], array[:,6], label="NFW", color="black", linestyle="dotted", lw=1.5)
+
+# array = np.loadtxt("dmOnly_DDO161/30_3_377_20/T_result.txt")
+# plt.plot(array[:,1], array[:,6], label="DM only (30)", color="black", lw=1)
+
+# array = np.loadtxt("withBar_DDO161/30_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="w/ baryons (30)", color="blue", lw=1)
+
+# array = np.loadtxt("withBar_withIter_DDO161/30_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="w/ baryons & iter. (30)", color="green", linestyle="dashed", lw=1)
+
+# array = np.loadtxt("dmOnly_DDO161/70_3_377_20/T_result.txt")
+# plt.plot(array[:,1], array[:,6], label="DM only (70)", color="black", lw=2.5)
+
+# array = np.loadtxt("withBar_DDO161/70_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="w/ baryons (70)", color="blue", lw=2.5)
+
+# array = np.loadtxt("withBar_withIter_DDO161/70_3_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="w/ baryons & iter. (70)", color="green", linestyle="dashed", lw=2.5)
+
+# plt.ylabel(r'DM density $\rho_{DM}$ [M$_{\odot}$ kpc$^{-3}$]')
+# plt.xlabel(r'Radius r [kpc]')
+# plt.xscale("log")
+# plt.yscale("log")
+# plt.ylim(1e4, 1e8)
+# plt.xlim(0.5, 100)
+# plt.legend()
+# plt.show()
+
+
+
+
+
+# array = np.loadtxt("withBar_DDO161/50_3_377_20/TDM_t=0.txt")
+# plt.plot(array[:,1], array[:,6], label="NFW", color="black", linestyle="dotted", lw=1.5)
+
+# array = np.loadtxt("dmOnly_DDO161/50_3_377_20/T_result.txt")
+# plt.plot(array[:,1], array[:,6], label="DM only (50, 3)", color="black", lw=1.5)
+
+# array = np.loadtxt("withBar_DDO161/56_2.9_377_20/TDM_result.txt")
+# plt.plot(array[:,1], array[:,6], label="w/ baryons (56, 2.9)", color="blue", lw=1.5)
+
+# plt.ylabel(r'DM density $\rho_{DM}$ [M$_{\odot}$ kpc$^{-3}$]')
+# plt.xlabel(r'Radius r [kpc]')
+# plt.xscale("log")
+# plt.yscale("log")
+# plt.ylim(1e4, 1e8)
+# plt.xlim(0.5, 100)
+# plt.legend()
+# plt.show()
+
+
+
+

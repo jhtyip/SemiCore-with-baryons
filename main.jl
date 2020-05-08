@@ -24,24 +24,30 @@ m = m_molar / 1000 / 6.02214076e23 / Mo  # Mass per particle (75% hydrogen atom 
 
 aIndex = 1.66666667  # Adiabatic index: 5 / 3
 
-# Parameters of Kim/XiaoXiong's halo
-c = 23.6  # Concentration parameter
-M_vir = 0.505e10  # Mo
-rho_avg = 103.4 * rho_c
+# # Parameters of Kim/XiaoXiong's halo
+# c = 23.6  # Concentration parameter
+# M_vir = 0.505e10  # Mo
+# rho_avg = 103.4 * rho_c
 
-v_k_in_kms = 30
+# Parameters of halo
+c = 6.24
+M_vir = 7.41e10  # Mo
+rho_avg = 200 * rho_c
+
+v_k_in_kms = 56
 v_k = v_k_in_kms * 1000 / kpc # Recoil velocity of daughter particles; km s-1 to kpc s-1
-tau = 6.93  # Half-life of mother particles; Gyr
+tau = 2.9  # Half-life of mother particles; Gyr
 
 t_end = 14  # Age of the universe; Gyr
-numOfSteps = 40  # 40+ is good enough
+numOfSteps = 20  # 40+ is good enough
 
-firstShellThickness = 0.0001 # 1e-5  # Use 1e-n to see from 1e-(n-3) (a bit conservative)
-shellThicknessFactor = 1.02 # 1.02  # Thickness of shell grows exponentially by this factor
+firstShellThickness = 1e-3  # Use 1e-n to see from 1e-(n-3) (a bit conservative)
+shellThicknessFactor = 1.02  # Thickness of shell grows exponentially by this factor
 
-initBarRho_0 = 1e9  # Initial baryon core density; Mo kpc-3; typical: 1e9
-initCoreT = 5e5  # Core temperature; K; Milky Way: 1e6
-baryonEffectIter = 2  # Number of iterations to update DM (adiabatic expansion / contraction) from changed baryon profile. 2 is good enough
+totalBarMass = 2.10674e9 # totalBarMass to guess for; Mo
+initBarRho_0 = 3.015260421975121e6  # Initial baryon core density; Mo kpc-3; typical: 1e9
+initCoreT = 560346.2150147454  # Core temperature; K; Milky Way: 1e6
+baryonEffectIter = 0  # Number of iterations to update DM (adiabatic expansion / contraction) from changed baryon profile. 2 is good enough
 
 barStopRho = 200 * rho_c  # Typical: 200x (e.g. 103.4 for Xiaoxiong's halo / simulation)
 ####################################################################################################
@@ -281,7 +287,7 @@ function verify_NFW()
     return nothing
 end
 
-function withBar()
+function withBar(totalBarMass)
     functionStart = time_ns()
     stepStart = time_ns()
 
@@ -344,8 +350,11 @@ function withBar()
 
     # Solve for the baryon mass profile
     B_BC, B_params = barConditions(initBarRho_0, K, G, aIndex)
-    Bshells_radii, Bshells_mass, Bshells_radii_hiRes, Bshells_rho_hiRes = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
+    # Bshells_radii, Bshells_mass, Bshells_radii_hiRes, Bshells_rho_hiRes = barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass)
+    Bshells_radii, Bshells_mass, newBarRho_0, newCoreT, Bshells_radii_hiRes, Bshells_rho_hiRes = barProfileUpdate(totalBarMass, barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclosedMass, tol_barGuess, K, G)
+    println("newBarRho_0: ", newBarRho_0)
     println("radius of galaxy: ", Bshells_radii_hiRes[end])
+    println("coreT: ", newCoreT)
 
     ########################### No iteration ever required here: the form of NFW profile should be kept. The appearance of baryons alters angular momentum of the DM particles
 
@@ -401,8 +410,8 @@ function withBar()
     println("Time taken for this step: ", timeTaken, "s\n")
     println(g, t, "\t", timeTaken, "\t", totalDMmass, "\t", totalBarMass, "\t", initBarRho_0, "\t", initCoreT, "\t", Bshells_radii_hiRes[end])
 
-    newBarRho_0 = initBarRho_0
-    newCoreT = initCoreT
+    # newBarRho_0 = initBarRho_0
+    # newCoreT = initCoreT
     for t in dt:dt:t_end
         stepStart = time_ns()
 
@@ -549,6 +558,7 @@ function withBar()
     return nothing
 end
 
+# Uncomment to pick which to run
 # dmOnly()
 # verify_NFW()
-# withBar()
+# withBar(totalBarMass)
