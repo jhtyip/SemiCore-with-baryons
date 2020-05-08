@@ -771,7 +771,7 @@ function shellTrimmer(shells_radii, shells_mass)
 end
 
 
-# Removing the "Boltzmann tail" of baryon particles
+# Removing the "Boltzmann tail" of baryon particles (error: T should be r dependent)
 function barEscape(T, Tshells_GPE, Bshells_mass, m, k)
     totalBarMass = sum(Bshells_mass)
     

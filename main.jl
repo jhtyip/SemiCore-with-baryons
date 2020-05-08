@@ -24,12 +24,12 @@ m = m_molar / 1000 / 6.02214076e23 / Mo  # Mass per particle (75% hydrogen atom 
 
 aIndex = 1.66666667  # Adiabatic index: 5 / 3
 
-# # Parameters of Kim/XiaoXiong's halo
+# # Parameters for Kim/XiaoXiong's halo
 # c = 23.6  # Concentration parameter
 # M_vir = 0.505e10  # Mo
 # rho_avg = 103.4 * rho_c
 
-# Parameters of halo
+# Parameters for halo
 c = 6.24
 M_vir = 7.41e10  # Mo
 rho_avg = 200 * rho_c
