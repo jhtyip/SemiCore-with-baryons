@@ -8,15 +8,17 @@
 include("myFunctions.jl")
 
 ######################################## Tunable parameters ########################################
-tol_ellipseGuess = 0.01 / 100  # Tolerance for bisection method. In unit of shellThickness
-tol_barGuess = 0.01 / 100
+tol_ellipseGuess = 0.01 / 100  # Tolerance for bisection method in guessing ellipses. In unit of shellThickness
+tol_barGuess = 0.01 / 100  # Tolerance for bisection method in guessing updated baryon profile
 
-const Mo = 1.98847e30  # kg
+const Mo = 1.98847e30  # Solar mass; kg
 const kpc = 3.08567758128e19  # m
 
+const h = 0.6766  # "little h"; dimensionless, defined by H = 100 h km s-1 Mpc-1
+
 const G = 6.67430e-11 / kpc ^ 3 * Mo  # m3 kg-1 s-2 to kpc3 Mo-1 s-2
-const H = 70 * 1000 / 1000 / kpc  # km s-1 Mpc-1 to s-1
-const k = 1.380649e-23 / kpc ^ 2 / Mo  # kg m2 s−2 K-1 to Mo kpc2 s-2 K-1
+const H = (h * 100) * 1000 / 1000 / kpc  # km s-1 Mpc-1 to s-1
+const k = 1.380649e-23 / kpc ^ 2 / Mo  # Boltzmann constant; kg m2 s−2 K-1 to Mo kpc2 s-2 K-1
 const rho_c = 3 * H ^ 2 / (8 * pi * G)  # Critical density of the universe
 
 m_molar = 0.75 * 1.00784 + 0.25 * 4.002602;  # Molar mass per particle (75% hydrogen atom + 25% helium atom); g mol-1
@@ -24,32 +26,39 @@ m = m_molar / 1000 / 6.02214076e23 / Mo  # Mass per particle (75% hydrogen atom 
 
 aIndex = 1.66666667  # Adiabatic index: 5 / 3
 
-# # Parameters for Kim/XiaoXiong's halo
-# c = 23.6  # Concentration parameter
-# M_vir = 0.505e10  # Mo
-# rho_avg = 103.4 * rho_c
-
-# Parameters for halo
+# Parameters for DDO161's DM halo
 c = 6.24
 M_vir = 7.41e10  # Mo
 rho_avg = 200 * rho_c
 
-v_k_in_kms = 56
+# # Parameters for XiaoXiong/Kim's halo
+# c = 23.6  # Concentration parameter
+# M_vir = 0.505e10  # Mo
+# rho_avg = 103.4 * rho_c
+
+# # Parameters for Cheong's halo
+# c = 23.6
+# M_vir = 3e9 / h
+# rho_avg = 103.4 * rho_c
+
+v_k_in_kms = 20
 v_k = v_k_in_kms * 1000 / kpc # Recoil velocity of daughter particles; km s-1 to kpc s-1
-tau = 2.9  # Half-life of mother particles; Gyr
+tau = 14  # Half-life of mother particles; Gyr
 
 t_end = 14  # Age of the universe; Gyr
-numOfSteps = 20  # 40+ is good enough
+# t_end = 13.76322694  # lookback time for evolving from z = 63 to z = 0; Gyr
+numOfSteps = 40  # 40+ is good enough
 
-firstShellThickness = 1e-3  # Use 1e-n to see from 1e-(n-3) (a bit conservative)
-shellThicknessFactor = 1.02  # Thickness of shell grows exponentially by this factor
+firstShellThickness = 1e-4  # Use 1e-n to see from 1e-(n-3) (a bit conservative)
+shellThicknessFactor = 1.01  # Thickness of shell grows exponentially by this factor
 
+# Parameters for DDO161's gas halo
 totalBarMass = 2.10674e9 # totalBarMass to guess for; Mo
 initBarRho_0 = 3.015260421975121e6  # Initial baryon core density; Mo kpc-3; typical: 1e9
 initCoreT = 560346.2150147454  # Core temperature; K; Milky Way: 1e6
 baryonEffectIter = 0  # Number of iterations to update DM (adiabatic expansion / contraction) from changed baryon profile. 2 is good enough
 
-barStopRho = 200 * rho_c  # Typical: 200x (e.g. 103.4 for Xiaoxiong's halo / simulation)
+barStopRho = 200 * rho_c  # Typical: 200x (e.g. 103.4 for Xiaoxiong's halo / simulation). barRho_avg(r) = barStopRho
 ####################################################################################################
 
 ######################################## Calculations ##############################################
@@ -243,49 +252,24 @@ function dmOnly()
         println(g, t, "\t", timeTaken, "\t", totalDMmass)
     end
 
-        MfileName = folderName * "/M_result.txt"
-        printToFile(Mshells_radii, Mshells_mass, MfileName)
-        DfileName = folderName * "/D_result.txt"
-        printToFile(Dshells_radii, Dshells_mass, DfileName)
-        TfileName = folderName * "/T_result.txt"
-        printToFile(Tshells_radii, Tshells_mass, TfileName)
-        GPEfileName = folderName * "/GPE_result.txt"
-        printToFile_GPE(Tshells_radii, Tshells_GPE, GPEfileName)
+    MfileName = folderName * "/M_result.txt"
+    printToFile(Mshells_radii, Mshells_mass, MfileName)
+    DfileName = folderName * "/D_result.txt"
+    printToFile(Dshells_radii, Dshells_mass, DfileName)
+    TfileName = folderName * "/T_result.txt"
+    printToFile(Tshells_radii, Tshells_mass, TfileName)
+    GPEfileName = folderName * "/GPE_result.txt"
+    printToFile_GPE(Tshells_radii, Tshells_GPE, GPEfileName)
 
-        timeTaken_total = (time_ns() - functionStart) / 1e9
-        println(f, "timeTaken_total=", timeTaken_total)
-        println("Total time taken: ", timeTaken_total, "s\n")
+    timeTaken_total = (time_ns() - functionStart) / 1e9
+    println(f, "timeTaken_total=", timeTaken_total)
+    println("Total time taken: ", timeTaken_total, "s\n")
 
+    close(f)
+    close(g)
     return nothing
 end
 
-function verify_NFW()
-    # Verify my potential function
-    Mshells_radii, Mshells_mass = NFW_shells(NFW_params, initNumOf_M_Shells, shellThicknessFactor)
-    Dshells_radii, Dshells_mass = Mshells_radii, zeros(size(Mshells_radii, 1))
-    Tshells_radii, Tshells_mass = totalShells(Mshells_radii, Dshells_radii, Mshells_mass, Dshells_mass)
-    Tshells_enclosedMass = enclosedMass(Tshells_radii, Tshells_mass)
-    
-    Tshells_GPE = GPE(Tshells_radii, Tshells_mass, Tshells_enclosedMass, G)
-    NFWshells_GPE = NFW_GPE(Tshells_radii, NFW_params, G)
-    fileName = "verify_NFW_GPE_" * string(initNumOf_M_Shells) * ".txt"
-    printToFile_verify_NFW_GPE(fileName, Tshells_radii, Tshells_GPE, NFWshells_GPE)
-
-    # Inspect the effective potential profile for a given L
-    Mshells_L = L(Mshells_radii, Tshells_enclosedMass, G)
-    Mshells_totalE_afterDecay = totalE_afterDecay(Mshells_radii, Tshells_GPE, Mshells_L, v_k)
-    Mshells_radii = Mshells_radii[:, 3]  # Just the shell radii
-    
-    potentialProfile = zeros(size(Mshells_radii, 1))
-    for i in 1:size(potentialProfile, 1)
-        # Pick some L at small r: floor(Int, size(Mshells_radii, 1) * 1 / 3)
-        potentialProfile[i] = energyEquation(Mshells_radii[i], Mshells_L[floor(Int, size(Mshells_radii, 1) * 1 / 3)], 0, Tshells_radii, Tshells_GPE, Tshells_enclosedMass)
-    end
-    fileName = "NFW_EffPotentialProfile.txt"
-    printToFile_NFW_effPotentialProfile(fileName, Mshells_radii, potentialProfile)
-
-    return nothing
-end
 
 function withBar(totalBarMass)
     functionStart = time_ns()
@@ -536,29 +520,31 @@ function withBar(totalBarMass)
         println(g, t, "\t", timeTaken, "\t", totalDMmass, "\t", totalBarMass, "\t", newBarRho_0, "\t", newCoreT, "\t", Bshells_radii_hiRes[end])
     end
 
-        MfileName = folderName * "/M_result.txt"
-        printToFile(Mshells_radii, Mshells_mass, MfileName)
-        DfileName = folderName * "/D_result.txt"
-        printToFile(Dshells_radii, Dshells_mass, DfileName)
-        TDMfileName = folderName * "/TDM_result.txt"
-        printToFile(TDMshells_radii, TDMshells_mass, TDMfileName)
-        BfileName = folderName * "/B_result.txt"
-        printToFile(Bshells_radii, Bshells_mass, BfileName)
-        BhiResfileName = folderName * "/BhiRes_result.txt"
-        printToFile_BhiRes(Bshells_radii_hiRes, Bshells_rho_hiRes, BhiResfileName)
-        TfileName = folderName * "/T_result.txt"
-        printToFile(Tshells_radii, Tshells_mass, TfileName)
-        GPEfileName = folderName * "/GPE_result.txt"
-        printToFile_GPE(Tshells_radii, Tshells_GPE, GPEfileName)
+    MfileName = folderName * "/M_result.txt"
+    printToFile(Mshells_radii, Mshells_mass, MfileName)
+    DfileName = folderName * "/D_result.txt"
+    printToFile(Dshells_radii, Dshells_mass, DfileName)
+    TDMfileName = folderName * "/TDM_result.txt"
+    printToFile(TDMshells_radii, TDMshells_mass, TDMfileName)
+    BfileName = folderName * "/B_result.txt"
+    printToFile(Bshells_radii, Bshells_mass, BfileName)
+    BhiResfileName = folderName * "/BhiRes_result.txt"
+    printToFile_BhiRes(Bshells_radii_hiRes, Bshells_rho_hiRes, BhiResfileName)
+    TfileName = folderName * "/T_result.txt"
+    printToFile(Tshells_radii, Tshells_mass, TfileName)
+    GPEfileName = folderName * "/GPE_result.txt"
+    printToFile_GPE(Tshells_radii, Tshells_GPE, GPEfileName)
 
-        timeTaken_total = (time_ns() - functionStart) / 1e9
-        println(f, "timeTaken_total=", timeTaken_total)
-        println("Total time taken: ", timeTaken_total, "s\n")
+    timeTaken_total = (time_ns() - functionStart) / 1e9
+    println(f, "timeTaken_total=", timeTaken_total)
+    println("Total time taken: ", timeTaken_total, "s\n")
 
+    close(f)
+    close(g)
     return nothing
 end
 
+
 # Uncomment to pick which to run
 # dmOnly()
-# verify_NFW()
 # withBar(totalBarMass)

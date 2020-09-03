@@ -15,43 +15,9 @@ function NFW_shellMass(NFW_params, shellRange)
     integrand(r) = 4 * pi * r ^ 2 * NFW_density(NFW_params, r)
     
     return quadgk(integrand, shellRange[1], shellRange[2])[1]
-end    
-
- 
-######################################## For verify_NFW() ##########################################
-function NFW_GPE(NFWshells_radii, NFW_params, G)
-    NFWshells_GPE = zeros(size(NFWshells_radii, 1))
-    for i in 1:size(NFWshells_GPE, 1)
-        NFWshells_GPE[i] = -4 * pi * G * NFW_params[1] * NFW_params[2] ^ 3 / NFWshells_radii[i, 3] * log(1 + NFWshells_radii[i, 3] / NFW_params[2])
-    end
-
-    return NFWshells_GPE
 end
 
 
-function printToFile_verify_NFW_GPE(fileName, Tshells_radii, Tshells_GPE, NFWshells_GPE)
-    f = open(fileName, "w")
-
-    for i in 1:size(Tshells_radii, 1)
-        println(f, Tshells_radii[i, 3], "\t", Tshells_GPE[i], "\t", NFWshells_GPE[i])
-    end
-
-    return nothing
-end
-
-
-function printToFile_NFW_effPotentialProfile(fileName, Mshells_radii, potentialProfile)
-    f = open(fileName, "w")
-
-    for i in 1:size(Mshells_radii, 1)
-        println(f, Mshells_radii[i], "\t", potentialProfile[i])
-    end
-
-    return nothing
-end
-
-
-####################################################################################################
 # Return mass array of NFW profile
 # shells_radii = [inner radius, outer radius, shell radius] in the ith row
 # shells_mass = [total shell mass]. Assume all mass in a shell concentrate at the position just inside the shell radius
@@ -515,6 +481,7 @@ function printToFile(shells_radii, shells_mass, fileName)
         println(f, shells_radii[i, 1], "\t", shells_radii[i, 2], "\t", shells_radii[i, 3], "\t", shells_mass[i], "\t", shells_rho[i], "\t", shells_enclosedMass[i], "\t", shells_avgRho[i])
     end
 
+    close(f)
     return nothing
 end
 
@@ -526,6 +493,7 @@ function printToFile_GPE(Tshells_radii, Tshells_GPE, fileName)
         println(f, Tshells_radii[i, 1], "\t", Tshells_radii[i, 2], "\t", Tshells_radii[i, 3], "\t", Tshells_GPE[i])
     end
 
+    close(f)
     return nothing
 end
 
@@ -587,10 +555,15 @@ function barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclo
     r_ = h / 2  # First shellRadius
     bar_rho_d0 = B_BC[1]
     bar_rho_d1 = B_BC[2]
-    while bar_rho_d0 >= barStopRho
+    bar_enclosedMass_d0 = 4 / 3 * pi * r_ ^ 3 * bar_rho_d0
+    bar_rho_d0_avg = bar_enclosedMass_d0 / (4 / 3 * pi * r_ ^ 3)
+    while bar_rho_d0_avg > barStopRho
         push!(Bshells_shellRadii, r_)
         push!(Bshells_rho_d0, bar_rho_d0)
         push!(Bshells_rho_d1, bar_rho_d1)
+
+        r1 = r_
+        bar_rho_r1 = bar_rho_d0
 
         k0 = h * bar_rho_d1
         l0 = h * bar_rho_d2(bar_rho_d1, bar_rho_d0, r_, B_params, TDMshells_radii, TDMshells_rho)
@@ -604,6 +577,16 @@ function barProfile(barStopRho, B_BC, B_params, TDMshells_radii, TDMshells_enclo
         r_ += h
         bar_rho_d0 += (k0 + 2 * k1 + 2 * k2 + k3) / 6
         bar_rho_d1 += (l0 + 2 * l1 + 2 * l2 + l3) / 6
+
+        r2 = r_
+        bar_rho_r2 = bar_rho_d0
+        
+        # Assume linear between steps
+        bar_rho_r_m = (bar_rho_r1 - bar_rho_r2) / (r1 - r2)
+        bar_rho_r_c = bar_rho_r1 - bar_rho_r_m * r1
+
+        bar_enclosedMass_d0 += bar_rho_r_m * pi * (r2 ^ 4 - r1 ^ 4) + 4 / 3 * bar_rho_r_c * pi * (r2 ^ 3 - r1 ^ 3)
+        bar_rho_d0_avg = bar_enclosedMass_d0 / (4 / 3 * pi * r_ ^ 3)
     end
 
     # println(Bshells_rho_d0[end])
@@ -752,25 +735,12 @@ function printToFile_BhiRes(Bshells_radii_hiRes, Bshells_rho_hiRes, fileName)
         println(f, Bshells_radii_hiRes[i], "\t", Bshells_rho_hiRes[i])
     end
 
+    close(f)
     return nothing
 end
 
 
 ######################################### Not used yet #############################################
-function shellTrimmer(shells_radii, shells_mass)
-    numOfZeros = 0
-    for i in 0:size(shells_radii, 1) - 1
-        if shells_mass[end - i] == 0
-            numOfZeros += 1
-        else
-            break
-        end
-    end
- 
-    return shells_radii[1:end - numOfZeros, :], shells_mass[1:end - numOfZeros]
-end
-
-
 # Removing the "Boltzmann tail" of baryon particles (error: T should be r dependent)
 function barEscape(T, Tshells_GPE, Bshells_mass, m, k)
     totalBarMass = sum(Bshells_mass)
@@ -795,6 +765,20 @@ function barEscape(T, Tshells_GPE, Bshells_mass, m, k)
 end
 
 
+function shellTrimmer(shells_radii, shells_mass)
+    numOfZeros = 0
+    for i in 0:size(shells_radii, 1) - 1
+        if shells_mass[end - i] == 0
+            numOfZeros += 1
+        else
+            break
+        end
+    end
+ 
+    return shells_radii[1:end - numOfZeros, :], shells_mass[1:end - numOfZeros]
+end
+
+
 function escapedRemoval(Tshells_enclosedMass, Tshells_GPE_updated, shells_radii, shells_mass, G)
     for i in 1:size(shells_radii, 1)
         KE = G * Tshells_enclosedMass[i] / (2 * shells_radii[i, 3])  # Assume circularly moving particles
@@ -816,5 +800,6 @@ function printToFile_orbitalV(Tshells_radii, Tshells_enclosedMass, G, fileName)
         println(f, Tshells_radii[i, 1], "\t", Tshells_radii[i, 2], "\t", Tshells_radii[i, 3], "\t", (G * Tshells_enclosedMass[i] / Tshells_radii[i, 2]) ^ 0.5)
     end
 
+    close(f)
     return nothing
 end
